@@ -142,8 +142,10 @@ public class SenPitServer extends Thread {
 			// добавляем данные об адресе сокета:
 			//data = "" + num + ": " + "\n" + data;
 
-
-			data += "\n" + Boolean.toString(res);
+			if (res == false)
+				data = "";
+			else
+				data = String.format("%s:%d:%s", proxyIP, proxyPort, proxyType);
 
 			// выводим данные:
 			os.write(data.getBytes());

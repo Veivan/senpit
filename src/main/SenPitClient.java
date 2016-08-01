@@ -28,9 +28,10 @@ public class SenPitClient extends Thread {
 			s.getOutputStream().write(command.getBytes());
 
 			// читаем ответ
+			String data = "";
 			byte buf[] = new byte[64 * 1024];
 			int r = s.getInputStream().read(buf);
-			String data = new String(buf, 0, r);
+			if (r > 0) data = new String(buf, 0, r);
 
 			// выводим ответ в консоль
 			System.out.println(data);
