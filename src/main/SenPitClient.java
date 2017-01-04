@@ -8,7 +8,7 @@ public class SenPitClient extends Thread {
 	static Socket s;
 	
 	public static String command;
-	static String proxyIP = "101.50.1.2"; // указываем адрес
+	static String proxyIP = "181.39.11.132"; // указываем адрес
 	static int proxyPort = 80;              // указываем порт
 	static String proxyType = "HTTP";
 
