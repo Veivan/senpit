@@ -13,7 +13,9 @@ public class SenPitClient extends Thread {
 	static String proxyType = "HTTP";
 	
 	private String proxyIP = "181.39.11.132"; 
-	private int proxyPort = 80;             
+	private int proxyPort = 80;    
+	
+	private DbConnectSingle dbConnector = null;
 	
 	private Socket s;
 	private String command;	
@@ -21,13 +23,14 @@ public class SenPitClient extends Thread {
 	/**
 	 * Конструктор. На входе строка вида "94.177.172.141:8080"
 	 */
-	public SenPitClient(String data)
+	public SenPitClient(String data, DbConnectSingle dbConnector)
 	{
 		String[] sp = data.split(":");
 		if (sp.length > 1) {
 			proxyIP = sp[0];
 			proxyPort = Integer.parseInt(sp[1]);
 		}
+		this.dbConnector = dbConnector;
 	}
 	
 	@Override
@@ -56,7 +59,11 @@ public class SenPitClient extends Thread {
 			int r = s.getInputStream().read(buf);
 			if (r > 0) data = new String(buf, 0, r);
 
-			// выводим ответ в консоль
+			if (dbConnector != null && !data.isEmpty())
+			{
+				dbConnector.SaveProxy(proxyIP, proxyPort);
+			}
+			// выводим ответ в консоль			
 			System.out.println(data);
 			System.out.println("The end");
 			
@@ -75,13 +82,14 @@ public class SenPitClient extends Thread {
 	}
 	
 	public static void main(String args[]) throws IOException {
+		DbConnectSingle dbConnector = DbConnectSingle.getInstance();  
 		ExecutorService cachedPool = Executors.newCachedThreadPool();
 		Scanner in = new Scanner(new FileReader("proxy.txt"));	
 		while (in.hasNext()) 
 		{ 
 			String data = in.next();
 			//System.out.println (in.next()); 
-			cachedPool.submit(new SenPitClient(data));
+			cachedPool.submit(new SenPitClient(data, dbConnector));
 		}
 		in.close();
 	}
