@@ -1,18 +1,41 @@
 package main;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SenPitClient extends Thread {
 	static final int port = 1967;
-	static Socket s;
-	
-	public static String command;
-	static String proxyIP = "181.39.11.132"; // указываем адрес
-	static int proxyPort = 80;              // указываем порт
+	// –аботать будем только с HTTP
 	static String proxyType = "HTTP";
+	
+	private String proxyIP = "181.39.11.132"; 
+	private int proxyPort = 80;             
+	
+	private Socket s;
+	private String command;	
 
-	public static void main(String args[]) throws IOException {
+	/**
+	 *  онструктор. Ќа входе строка вида "94.177.172.141:8080"
+	 */
+	public SenPitClient(String data)
+	{
+		String[] sp = data.split(":");
+		if (sp.length > 1) {
+			proxyIP = sp[0];
+			proxyPort = Integer.parseInt(sp[1]);
+		}
+	}
+	
+	@Override
+	public void run() {
+		CheckIt();
+	}
+	
+	private void CheckIt() {
 		try {
 			// открываем сокет и коннектимс€ к localhost:port
 			// получаем сокет сервера
@@ -35,14 +58,31 @@ public class SenPitClient extends Thread {
 
 			// выводим ответ в консоль
 			System.out.println(data);
+			System.out.println("The end");
 			
 			
 		} catch (Exception e) {
 			System.out.println("client error: " + e);
 		} // вывод исключений
 		finally {
-			s.close();
+			try {
+				s.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		
+	}
+	
+	public static void main(String args[]) throws IOException {
+		ExecutorService cachedPool = Executors.newCachedThreadPool();
+		Scanner in = new Scanner(new FileReader("proxy.txt"));	
+		while (in.hasNext()) 
+		{ 
+			String data = in.next();
+			//System.out.println (in.next()); 
+			cachedPool.submit(new SenPitClient(data));
+		}
+		in.close();
 	}
 }
