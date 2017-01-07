@@ -92,5 +92,6 @@ public class SenPitClient extends Thread {
 			cachedPool.submit(new SenPitClient(data, dbConnector));
 		}
 		in.close();
+		cachedPool.shutdown();
 	}
 }
