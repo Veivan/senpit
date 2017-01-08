@@ -1,5 +1,6 @@
 package main;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -48,27 +49,22 @@ public class DbConnectSingle {
 	public void SaveProxy(String IP, int port) {
 		try {
 			dbConnect();
-			String query = "INSERT [dbo].[mProxies] ([ip], [port], [prtypeID], [id_cn], [alive]) VALUES (?,?,?,?,?)";
-			PreparedStatement pstmt = conn.prepareStatement(query);
-			pstmt.setString(1, IP);
-			pstmt.setInt(2, port);
-			pstmt.setInt(3, 1);
-			pstmt.setInt(4, 0);
-			pstmt.setInt(5, 1);
-			pstmt.execute();
-			pstmt.close();
-			pstmt = null;
+			String query = "{call [dbo].[spSaveProxy](?,?,?,?,?)}";
+			CallableStatement sp = conn.prepareCall(query);
+			sp.setString(1, IP);
+			sp.setInt(2, port);
+			sp.setInt(3, 1);
+			sp.setInt(4, 0);
+			sp.setInt(5, 1);
+			sp.execute();
+			sp.close();
+			sp = null;
+			if (conn != null)
+				conn.close();
+			conn = null;
 		} catch (Exception e) {
 			System.out.println("SaveProxy exception : " + e.getMessage());
-		} finally {
-			if (conn != null)
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					System.out.println("SaveProxy conn.close exception : " + e.getMessage());
-				}
-			conn = null;
 		}
 	}
-	
+
 }
