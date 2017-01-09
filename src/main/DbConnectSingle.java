@@ -3,7 +3,6 @@ package main;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class DbConnectSingle {
@@ -16,12 +15,12 @@ public class DbConnectSingle {
 	private Connection conn = null;
 	private String db_connect_string =
 	// local
-	"jdbc:sqlserver://KONSTANTIN-PC;instanceName=SQLEXPRESS14"
+	//"jdbc:sqlserver://KONSTANTIN-PC;instanceName=SQLEXPRESS14"
 	// "jdbc:sqlserver://WIN-2TFLS2PJ38K;instanceName=MSSQL2008R2"
 	// AWS
 	// "jdbc:sqlserver://WIN-2B897RSG769;instanceName=SQLEXPRESS2014"
 	// office
-	// "jdbc:sqlserver://014-MSDN;instanceName=SQL12"
+	 "jdbc:sqlserver://014-MSDN;instanceName=SQL12"
 			+ ";databaseName=MatrixB;";
 	private String db_userid = "sa";
 	private String db_password = "123456";
