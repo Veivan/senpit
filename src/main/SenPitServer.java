@@ -34,8 +34,9 @@ public class SenPitServer extends Thread {
 	Sema sema;
 	public boolean isworking = true;
 
-	static String testLink = "http://google.ru";
-	static int timeout = 10000; // время ожидания ответа (в милисекундах)
+	//static String testLink = "http://google.ru";
+	public static final String testLink = "https://twitter.com";
+	static int timeout = 30000; // время ожидания ответа (в милисекундах)
 
 	public static void main(String args[]) throws IOException {
 		Object sync = new Object();
