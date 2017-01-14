@@ -1,8 +1,11 @@
 package main;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -63,9 +66,10 @@ public class SenPitClient extends Thread {
 			int r = s.getInputStream().read(buf);
 			if (r > 0) data = new String(buf, 0, r);
 
-			if (dbConnector != null && !data.isEmpty())
+			if (dbConnector != null)
 			{
-				dbConnector.SaveProxy(proxyIP, proxyPort);
+				int isalive = data.isEmpty() ? 0 : 1;
+				dbConnector.SaveProxy(proxyIP, proxyPort, isalive);
 			}
 			// выводим ответ в консоль	
 			if (data.isEmpty()) msg += " is bad";
@@ -84,7 +88,12 @@ public class SenPitClient extends Thread {
 		
 	}
 	
-	public static void main(String args[]) throws IOException {
+	/**
+	 * Чтение прокси из файла proxy.txt
+	 * @throws FileNotFoundException 
+	 */
+	private static void ImportFromTxt() throws FileNotFoundException
+	{
 		DbConnectSingle dbConnector = DbConnectSingle.getInstance();  
 		ExecutorService cachedPool = Executors.newCachedThreadPool();
 		Scanner in = new Scanner(new FileReader("proxy.txt"));	
@@ -98,5 +107,29 @@ public class SenPitClient extends Thread {
 		}
 		in.close();
 		cachedPool.shutdown();
+	}
+	
+	/**
+	 * Чтение прокси из файла proxy.txt
+	 */
+	private static void CheckProxyDB()
+	{
+		DbConnectSingle dbConnector = DbConnectSingle.getInstance();  
+		ExecutorService cachedPool = Executors.newCachedThreadPool();		
+		List<String> list = dbConnector.GetProxsFromDB();
+		int i = 0;
+		for (String str : list) {			
+			//System.out.println (str); 
+			cachedPool.submit(new SenPitClient(str, dbConnector, i));
+			i++;
+		}
+		cachedPool.shutdown();
+	}
+	
+
+	public static void main(String args[]) throws IOException {
+		ImportFromTxt();
+		
+		//CheckProxyDB();
 	}
 }
