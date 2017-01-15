@@ -10,6 +10,8 @@ import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.swing.JTextArea;
+
 public class SenPitClient extends Thread {
 	static final int port = 1967;
 	// Работать будем только с HTTP
@@ -23,6 +25,8 @@ public class SenPitClient extends Thread {
 	private Socket s;
 	private String command;	
 	private int norder;
+
+	public JTextArea memo;
 
 	/**
 	 * Конструктор. На входе строка вида "94.177.172.141:8080"
@@ -112,20 +116,29 @@ public class SenPitClient extends Thread {
 	/**
 	 * Чтение прокси из файла proxy.txt
 	 */
-	private static void CheckProxyDB()
+	static void CheckProxyDB(JTextArea memo)
 	{
 		DbConnectSingle dbConnector = DbConnectSingle.getInstance();  
 		ExecutorService cachedPool = Executors.newCachedThreadPool();		
 		List<String> list = dbConnector.GetProxsFromDB();
+		memo.setText(null);
+		memo.append("Всего прокси : " + list.size() + "\n");
 		int i = 0;
 		for (String str : list) {			
-			//System.out.println (str); 
-			cachedPool.submit(new SenPitClient(str, dbConnector, i));
+			System.out.println (str); 
+			//cachedPool.submit(new SenPitClient(str, dbConnector, i));
 			i++;
 		}
 		cachedPool.shutdown();
 	}
-	
+
+	private static void CustomPrint(JTextArea memo, String message)
+	{
+		if (memo != null){
+			memo.append(message + "\n");			
+		}
+		System.out.println (message); 		
+	}
 
 	public static void main(String args[]) throws IOException {
 		ImportFromTxt();
