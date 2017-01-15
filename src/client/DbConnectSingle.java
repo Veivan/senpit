@@ -1,4 +1,4 @@
-package main;
+package client;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;

@@ -1,4 +1,4 @@
-package main;
+package client;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -55,7 +55,7 @@ public class ClientFace extends JFrame {
 		btCheckDBproxies = new JButton("Check proxies in DB");
 		btCheckDBproxies.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				SenPitClient.CheckProxyDB(memo);
+				dbProxyChecker.CheckProxyDB(memo);
 						//JOptionPane.showMessageDialog(null,"¬ведите параметры поиска!");
 			}
 		});

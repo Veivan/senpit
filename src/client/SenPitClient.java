@@ -1,14 +1,7 @@
-package main;
+package client;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Scanner;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.swing.JTextArea;
 
@@ -26,12 +19,12 @@ public class SenPitClient extends Thread {
 	private String command;	
 	private int norder;
 
-	public JTextArea memo;
+	private JTextArea memo;
 
 	/**
 	 * Конструктор. На входе строка вида "94.177.172.141:8080"
 	 */
-	public SenPitClient(String data, DbConnectSingle dbConnector, int norder)
+	public SenPitClient(String data, DbConnectSingle dbConnector, int norder, JTextArea memo)
 	{
 		String[] sp = data.split(":");
 		if (sp.length > 1) {
@@ -40,6 +33,7 @@ public class SenPitClient extends Thread {
 		}
 		this.dbConnector = dbConnector;
 		this.norder = norder;
+		this.memo = memo;
 	}
 	
 	@Override
@@ -50,7 +44,7 @@ public class SenPitClient extends Thread {
 	private void CheckIt() {
 		try {
 			String msg = "N" + norder + " " + proxyIP + ":" + proxyPort;
-			System.out.println(msg + " testing...");					
+			utils.CustomPrint(memo, msg+ " testing...");
 			// открываем сокет и коннектимся к localhost:port
 			// получаем сокет сервера
 			s = new Socket("localhost", port);
@@ -92,56 +86,8 @@ public class SenPitClient extends Thread {
 		
 	}
 	
-	/**
-	 * Чтение прокси из файла proxy.txt
-	 * @throws FileNotFoundException 
-	 */
-	private static void ImportFromTxt() throws FileNotFoundException
-	{
-		DbConnectSingle dbConnector = DbConnectSingle.getInstance();  
-		ExecutorService cachedPool = Executors.newCachedThreadPool();
-		Scanner in = new Scanner(new FileReader("proxy.txt"));	
-		int i = 0;
-		while (in.hasNext()) 
-		{ 
-			String data = in.next();
-			//System.out.println (in.next()); 
-			cachedPool.submit(new SenPitClient(data, dbConnector, i));
-			i++;
-		}
-		in.close();
-		cachedPool.shutdown();
-	}
-	
-	/**
-	 * Чтение прокси из файла proxy.txt
-	 */
-	static void CheckProxyDB(JTextArea memo)
-	{
-		DbConnectSingle dbConnector = DbConnectSingle.getInstance();  
-		ExecutorService cachedPool = Executors.newCachedThreadPool();		
-		List<String> list = dbConnector.GetProxsFromDB();
-		memo.setText(null);
-		memo.append("Всего прокси : " + list.size() + "\n");
-		int i = 0;
-		for (String str : list) {			
-			System.out.println (str); 
-			//cachedPool.submit(new SenPitClient(str, dbConnector, i));
-			i++;
-		}
-		cachedPool.shutdown();
-	}
-
-	private static void CustomPrint(JTextArea memo, String message)
-	{
-		if (memo != null){
-			memo.append(message + "\n");			
-		}
-		System.out.println (message); 		
-	}
-
 	public static void main(String args[]) throws IOException {
-		ImportFromTxt();
+		ProxyImporter.ImportFromTxt();
 		
 		//CheckProxyDB();
 	}
