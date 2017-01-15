@@ -6,13 +6,15 @@ import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.swing.JTextArea;
+
 public class ProxyImporter {
 
 	/**
 	 * Чтение прокси из файла proxy.txt
 	 * @throws FileNotFoundException 
 	 */
-	public static void ImportFromTxt() throws FileNotFoundException
+	public static void ImportFromTxt(JTextArea memo) throws FileNotFoundException
 	{
 		DbConnectSingle dbConnector = DbConnectSingle.getInstance();  
 		ExecutorService cachedPool = Executors.newCachedThreadPool();

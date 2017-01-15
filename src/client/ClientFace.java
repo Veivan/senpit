@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.FileNotFoundException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -14,7 +15,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
 /**
  * 
@@ -22,9 +22,9 @@ import javax.swing.JTextField;
 public class ClientFace extends JFrame {
 	private static final long serialVersionUID = -1441851739039937804L;
 	JTextArea memo;
+	JButton btImportProxyFromTXT;
 	JButton btCheckDBproxies;
 	JButton btImportBanners;
-	JTextField field1;
 
 	ClientFace() {
 		// Создаём панели
@@ -46,27 +46,36 @@ public class ClientFace extends JFrame {
 		p3.setLayout(bl3);
 
 		// Создаём компоненты в памяти
-		JLabel label1 = new JLabel("phrase 1:");
-		field1 = new JTextField(10);
-		JLabel label2 = new JLabel("phrase 2:");
-		JTextField field2 = new JTextField(10);
-		JLabel label3 = new JLabel("phrase 3:");
-		JTextField field3 = new JTextField(10);
-		btCheckDBproxies = new JButton("Check proxies in DB");
+		JLabel label1 = new JLabel("Import Banners from proxy.txt to DB");
+		btImportProxyFromTXT = new JButton("Start");
+		btImportProxyFromTXT.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ProxyImporter.ImportFromTxt(memo);
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});				
+
+		JLabel label2 = new JLabel("Check proxies in DB");
+		btCheckDBproxies = new JButton("Start");
 		btCheckDBproxies.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dbProxyChecker.CheckProxyDB(memo);
-						//JOptionPane.showMessageDialog(null,"Введите параметры поиска!");
 			}
 		});
 
-		btImportBanners = new JButton("Import Banners to DB");
+		JLabel label3 = new JLabel("Import Banners to DB");
+		btImportBanners = new JButton("Start");
 		btImportBanners.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//SenPitClient.CheckProxyDB(memo);
 				JOptionPane.showMessageDialog(null,"Import Banners to DB");
 			}
 		});				
+		
 		memo = new JTextArea();
 		JScrollPane scroll = new JScrollPane(memo,
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
@@ -79,13 +88,12 @@ public class ClientFace extends JFrame {
 
 		// Добавляем компоненты на панель
 		p1.add(label1);
-		p1.add(field1);
+		p1.add(btImportProxyFromTXT);
 		p1.add(label2);
-		p1.add(field2);
-		p1.add(label3);
-		p1.add(field3);
 		p1.add(btCheckDBproxies);
+		p1.add(label3);
 		p1.add(btImportBanners);
+
 		p2.add(scroll);
 		p3.add(memo3);
 

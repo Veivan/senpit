@@ -87,7 +87,7 @@ public class SenPitClient extends Thread {
 	}
 	
 	public static void main(String args[]) throws IOException {
-		ProxyImporter.ImportFromTxt();
+		ProxyImporter.ImportFromTxt(null);
 		
 		//CheckProxyDB();
 	}
