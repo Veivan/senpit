@@ -24,7 +24,7 @@ public class ProxyImporter {
 		{ 
 			String data = in.next();
 			//System.out.println (in.next()); 
-			cachedPool.submit(new SenPitClient(data, dbConnector, i, null));
+			cachedPool.submit(new SenPitClient(data, dbConnector, i, memo));
 			i++;
 		}
 		in.close();

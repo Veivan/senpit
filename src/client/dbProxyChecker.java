@@ -24,7 +24,6 @@ public class dbProxyChecker {
 		utils.CustomPrint(memo, message);
 		int i = 0;
 		for (String str : list) {			
-			utils.CustomPrint(memo, str);
 			cachedPool.submit(new SenPitClient(str, dbConnector, i, memo));
 			i++;
 		}

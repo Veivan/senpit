@@ -46,7 +46,18 @@ public class ClientFace extends JFrame {
 		p3.setLayout(bl3);
 
 		// Создаём компоненты в памяти
-		JLabel label1 = new JLabel("Import Banners from proxy.txt to DB");
+
+		memo = new JTextArea();
+		JScrollPane scroll = new JScrollPane(memo,
+				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+
+		JTextArea memo3 = new JTextArea();
+		memo3.setEditable(false);
+    	memo3.append(" Просто.\n");
+    	memo3.append(" текст ");
+
+		JLabel label1 = new JLabel("Import proxies from proxy.txt to DB");
 		btImportProxyFromTXT = new JButton("Start");
 		btImportProxyFromTXT.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -76,16 +87,6 @@ public class ClientFace extends JFrame {
 			}
 		});				
 		
-		memo = new JTextArea();
-		JScrollPane scroll = new JScrollPane(memo,
-				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-
-		JTextArea memo3 = new JTextArea();
-		memo3.setEditable(false);
-    	memo3.append(" Просто.\n");
-    	memo3.append(" текст ");
-
 		// Добавляем компоненты на панель
 		p1.add(label1);
 		p1.add(btImportProxyFromTXT);
