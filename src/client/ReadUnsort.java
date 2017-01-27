@@ -24,10 +24,10 @@ public class ReadUnsort {
 		return txt;
 	}
 
-	public static void main(String args[]) throws FileNotFoundException {
-		ReadUnsort reader = new ReadUnsort();
-		List<String> txt = reader.Parse();
+	public static void MakeUProxy() {
 		try (FileWriter writer = new FileWriter("uproxy.txt", false)) {
+			ReadUnsort reader = new ReadUnsort();
+			List<String> txt = reader.Parse();
 			for (int i = 0; i < txt.size(); i++) {
 				writer.write(txt.get(i));
 				writer.append('\n');
@@ -37,5 +37,9 @@ public class ReadUnsort {
 			System.out.println(ex.getMessage());
 		}
 		System.out.println("Finish");
+	}
+
+	public static void main(String args[]) {
+		MakeUProxy();
 	}
 }

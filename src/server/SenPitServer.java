@@ -179,7 +179,7 @@ public class SenPitServer extends Thread {
 		} catch (SocketTimeoutException e) {
 			return false;
 		} catch (Exception e) {
-			System.out.print("Error: " + e);
+			System.out.println("Error: " + e);
 			return false;
 		}
 	}

@@ -25,6 +25,7 @@ public class ClientFace extends JFrame {
 	JButton btImportProxyFromTXT;
 	JButton btCheckDBproxies;
 	JButton btImportBanners;
+	JButton btMakeUproxy;
 
 	ClientFace() {
 		// Создаём панели
@@ -87,6 +88,15 @@ public class ClientFace extends JFrame {
 			}
 		});				
 		
+		JLabel label4 = new JLabel("Make uproxy from unsort");
+		btMakeUproxy = new JButton("Start");
+		btMakeUproxy.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ReadUnsort.MakeUProxy();
+				JOptionPane.showMessageDialog(null,"Finish.");
+			}
+		});				
+		
 		// Добавляем компоненты на панель
 		p1.add(label1);
 		p1.add(btImportProxyFromTXT);
@@ -94,6 +104,8 @@ public class ClientFace extends JFrame {
 		p1.add(btCheckDBproxies);
 		p1.add(label3);
 		p1.add(btImportBanners);
+		p1.add(label4);
+		p1.add(btMakeUproxy);
 
 		p2.add(scroll);
 		p3.add(memo3);
