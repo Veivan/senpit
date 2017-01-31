@@ -9,36 +9,23 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DbConnectSingle {
+public class DbConnectorSenPit {
 
-	private static volatile DbConnectSingle instance;
-
-	private DbConnectSingle() {
+	public DbConnectorSenPit() {
 	}
 
 	private Connection conn = null;
 	private String db_connect_string =
 	// local
-	"jdbc:sqlserver://KONSTANTIN-PC;instanceName=SQLEXPRESS14"
+	//"jdbc:sqlserver://KONSTANTIN-PC;instanceName=SQLEXPRESS14"
 	// "jdbc:sqlserver://WIN-2TFLS2PJ38K;instanceName=MSSQL2008R2"
 	// AWS
 	// "jdbc:sqlserver://WIN-2B897RSG769;instanceName=SQLEXPRESS2014"
 	// office
-	// "jdbc:sqlserver://014-MSDN;instanceName=SQL12"
+	 "jdbc:sqlserver://014-MSDN"
 			+ ";databaseName=MatrixB;";
 	private String db_userid = "sa";
 	private String db_password = "123456";
-
-	public static DbConnectSingle getInstance() {
-		if (instance == null) {
-			synchronized (DbConnectSingle.class) {
-				if (instance == null) {
-					instance = new DbConnectSingle();
-				}
-			}
-		}
-		return instance;
-	}
 
 	private void dbConnect() throws ClassNotFoundException, SQLException {
 		Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");

@@ -13,7 +13,7 @@ public class SenPitClient extends Thread {
 	private String proxyIP = "181.39.11.132";
 	private int proxyPort = 80;
 
-	private DbConnectSingle dbConnector = null;
+	private DbConnectorSenPit dbConnector = null;
 
 	private Socket s;
 	private String command;
@@ -24,7 +24,7 @@ public class SenPitClient extends Thread {
 	/**
 	 * Конструктор. На входе строка вида "94.177.172.141:8080"
 	 */
-	public SenPitClient(String data, DbConnectSingle dbConnector, int norder,
+	public SenPitClient(String data, DbConnectorSenPit dbConnector, int norder,
 			JTextArea memo) {
 		String[] sp = data.split(":");
 		if (sp.length > 1) {

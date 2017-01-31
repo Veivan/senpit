@@ -16,7 +16,7 @@ public class dbProxyChecker {
 	static void CheckProxyDB(JTextArea memo)
 	{
 		String message = null;
-		DbConnectSingle dbConnector = DbConnectSingle.getInstance();  
+		DbConnectorSenPit dbConnector = new DbConnectorSenPit();  
 		ExecutorService cachedPool = Executors.newCachedThreadPool();		
 		List<String> list = dbConnector.GetProxsFromDB();
 		utils.CustomPrint(memo, null);

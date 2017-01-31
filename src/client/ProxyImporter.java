@@ -16,7 +16,7 @@ public class ProxyImporter {
 	 */
 	public static void ImportFromTxt(JTextArea memo) throws FileNotFoundException
 	{
-		DbConnectSingle dbConnector = DbConnectSingle.getInstance();  
+		DbConnectorSenPit dbConnector = new DbConnectorSenPit();  
 		ExecutorService cachedPool = Executors.newCachedThreadPool();
 		Scanner in = new Scanner(new FileReader("proxy.txt"));	
 		int i = 0;
