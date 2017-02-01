@@ -55,21 +55,16 @@ public class ClientFace extends JFrame {
 
 		JTextArea memo3 = new JTextArea();
 		memo3.setEditable(false);
-    	memo3.append(" Просто.\n");
-    	memo3.append(" текст ");
+		memo3.append("");
 
 		JLabel label1 = new JLabel("Import proxies from proxy.txt to DB");
 		btImportProxyFromTXT = new JButton("Start");
 		btImportProxyFromTXT.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					ProxyImporter.ImportFromTxt(memo);
-				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				ProxyImporter pimp = new ProxyImporter(memo, memo3);
+				pimp.run();
 			}
-		});				
+		});
 
 		JLabel label2 = new JLabel("Check proxies in DB");
 		btCheckDBproxies = new JButton("Start");
@@ -83,20 +78,20 @@ public class ClientFace extends JFrame {
 		btImportBanners = new JButton("Start");
 		btImportBanners.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//SenPitClient.CheckProxyDB(memo);
-				JOptionPane.showMessageDialog(null,"Import Banners to DB");
+				// SenPitClient.CheckProxyDB(memo);
+				JOptionPane.showMessageDialog(null, "Import Banners to DB");
 			}
-		});				
-		
+		});
+
 		JLabel label4 = new JLabel("Make uproxy from unsort");
 		btMakeUproxy = new JButton("Start");
 		btMakeUproxy.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ReadUnsort.MakeUProxy();
-				JOptionPane.showMessageDialog(null,"Finish.");
+				JOptionPane.showMessageDialog(null, "Finish.");
 			}
-		});				
-		
+		});
+
 		// Добавляем компоненты на панель
 		p1.add(label1);
 		p1.add(btImportProxyFromTXT);
@@ -127,11 +122,11 @@ public class ClientFace extends JFrame {
 			}
 		});
 	}
-	
+
 	public static void main(String[] args) {
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				//JFrame.setDefaultLookAndFeelDecorated(true);
+				// JFrame.setDefaultLookAndFeelDecorated(true);
 				new ClientFace();
 			}
 		});
