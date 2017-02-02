@@ -67,7 +67,7 @@ public class ProxyImporter implements Runnable {
 					}
 				}); 
 
-				Thread.sleep(500);
+				Thread.sleep(3000);
 			} 
 			System.out.println("Finita");
 
