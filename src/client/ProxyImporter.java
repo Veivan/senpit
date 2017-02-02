@@ -4,9 +4,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
@@ -15,7 +15,7 @@ public class ProxyImporter implements Runnable {
 
 	private JTextArea memo;
 	private JTextArea memostatus;
-	ArrayList<Future<?>> futures = new ArrayList<Future<?>>();
+	ArrayList<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
 
 	public ProxyImporter(JTextArea memo, JTextArea memostatus) {
 		this.memo = memo;
@@ -36,8 +36,10 @@ public class ProxyImporter implements Runnable {
 		while (in.hasNext()) {
 			String data = in.next();
 			// System.out.println (in.next());
-			Future<?> runnableFuture = cachedPool.submit(new SenPitClient(data,
-					dbConnector, i, memo));
+			//Future<?> runnableFuture = cachedPool.submit(new SenPitClient(data, dbConnector, i, memo));
+			
+			final CompletableFuture<Void> runnableFuture = CompletableFuture.runAsync( new SenPitClient(data,
+					dbConnector, i, memo), cachedPool);
 			futures.add(runnableFuture);
 			i++;
 		}
@@ -53,19 +55,22 @@ public class ProxyImporter implements Runnable {
 			int all = futures.size();
 			while (finished < all) {
 				finished = 0;
-				for (Future<?> future : futures) {
+				for (CompletableFuture<Void> future : futures) {
 					if (future.isDone())
 						finished++;
 				}
-				System.out.println(finished);
 				String message = "Checked " + finished + " from " + all;
+				System.out.println(message);
 
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						memostatus.setText(message);
-					}
-				}); 
+	            if (SwingUtilities.isEventDispatchThread()){
+					memostatus.setText(message);
+	            }else{
+	                SwingUtilities.invokeLater(new Runnable(){
+	                    public void run(){
+							memostatus.setText(message);
+	                    }
+	                });
+	            }
 
 				Thread.sleep(3000);
 			} 
