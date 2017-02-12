@@ -13,6 +13,8 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Класс выполняет проверку прокси. Понимает команды : 
@@ -173,6 +175,8 @@ public class SenPitServer extends Thread {
 			urlConn = (HttpURLConnection) url.openConnection(httpProxy);
 			urlConn.setConnectTimeout(timeout);
 			urlConn.connect();
+			Map<String, List<String>> headers =  urlConn.getHeaderFields();
+			IsAnonymous(pHost, urlConn.getHeaderFields());
 			return (urlConn.getResponseCode() == 200);
 		} catch (SocketException e) {
 			return false;
@@ -183,5 +187,72 @@ public class SenPitServer extends Thread {
 			return false;
 		}
 	}
+	
+	private boolean IsAnonymous(String pHost, Map<String, List<String>> headers) {
+		boolean res = true;
+
+		for (Map.Entry<String, List<String>> header : headers.entrySet())
+		{
+		    System.out.println(header.getKey() + "/");
+			
+			for (String val : header.getValue()) {
+			    System.out.println(val);			
+			}
+		}
+		
+		/*REMOTE_ADDR
+	HTTP_FORWARDED
+	HTTP_X_FORWARDED_FOR
+	HTTP_CLIENT_IP
+	HTTP_X_REAL_IP
+	
+	HTTP_VIA
+	*/
+	//, , HTTP_FORWARDED_FOR, HTTP_X_FORWARDED, , , HTTP_FORWARDED_FOR_IP, VIA, X_FORWARDED_FOR, FORWARDED_FOR, X_FORWARDED, FORWARDED, CLIENT_IP, FORWARDED_FOR_IP, HTTP_PROXY_CONNECTION
+
+	/*REMOTE_ADDR=178.54.44.24
+			HTTP_FORWARDED=na
+			HTTP_X_FORWARDED_FOR=134.119.217.246
+			HTTP_CLIENT_IP=na
+			HTTP_X_REAL_IP=na
+			HTTP_VIA=1.1 178.54.44.24 (Mikrotik HttpProxy)
+			HTTP_XROXY_CONNECTION=na
+			HTTP_PROXY_CONNECTION=na
+			HTTP_USERAGENT_VIA=na
+			HTTP_USER_AGENT=Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322)
+			HTTP_ACCEPT_LANGUAGE=na
+			REMOTE_HOST=na
+			HTTP_CONNECTION=na
+			SERVER_PROTOCOL=HTTP/1.1
+			HTTP_REFERER=http://xseo.in/ptest.php
+			HTTP_ACCEPT=
+			HTTP_CACHE_CONTROL=na
+			HTTP_CACHE_INFO=na
+			HTTP_FORWARDED_FOR=na
+			HTTP_COMING_FROM=na
+			HTTP_X_COMING_FROM=na
+			HTTP_ACCEPT_ENCODING=na
+			HTTP_ACCEPT_CHARSET=na
+			HTTP_HOST=xseo.in
+			HTTP_KEEP_ALIVE=na
+			HTTP_COOKIE=0
+			HTTP_UA_CPU=na
+			KEEP_ALIVE=na
+			HTTP_MAX_FORWARDS=na
+			MAX_FORWARDS=na
+			HTTP_X_BLUECOAT_VIA=na
+			HTTP_PC_REMOTE_ADDR=na
+			HTTP_X_FWD_IP_ADDR=na
+			HTTP_X_HOST=na
+			HTTP_X_REFERER=na
+			HTTP_X_SERVER_HOSTNAME=na
+			PROXY_HOST=na
+			PROXY_PORT=na
+			PROXY_REQUEST=na
+			HTTP_PRAGMA=na */
+			
+			return res;
+			
+		}
 
 }
