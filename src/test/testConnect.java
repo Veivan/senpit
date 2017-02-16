@@ -14,15 +14,15 @@ public class testConnect {
 
 	public static final String testLinkSSL = "https://twitter.com";
 	public static final String testLinkAn = "http://helpchildren.online/reqwinfo/getreqwinfo?";
+	public static final String AnonymousPhrase = "IsAnonymous:1";
 	
-	//http://veivan.ucoz.ru
 	static int timeout = 30000; // время ожидания ответа (в милисекундах)
 	
 	static String proxyIP;
 	static int proxyPort;
 
 	public static void main(String[] args) {
-		String proxy = "89.40.122.35:3128"; // good HTTPS 
+		String proxy = "208.110.116.129:8080"; // good HTTPS 
 		//String proxy = "104.198.110.101:80"; // good HTTPS 
 			
 		String[] sp = proxy.split(":");
@@ -71,8 +71,8 @@ public class testConnect {
 			System.out.println(response.toString());
 			
 			urlConn.disconnect();
-		
-			return (urlConn.getResponseCode() == 200);
+	
+			return (response.indexOf(AnonymousPhrase) > -1);
 		} catch (SocketException e) {
 			return false;
 		} catch (SocketTimeoutException e) {

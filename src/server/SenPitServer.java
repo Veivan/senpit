@@ -1,7 +1,9 @@
 package server;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
@@ -13,13 +15,13 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Класс выполняет проверку прокси. Понимает команды : 
  * <b>stops</b> - остановка сервиса 
- * <b>check:000.000.000.000:1234:ProxyType</b> - проверка прокси; 
+ * <b>checkanm:000.000.000.000:1234:ProxyType</b> - проверка прокси + проверка на анонимность; 
+ * возвращается булево значение 
+ * <b>check:000.000.000.000:1234:ProxyType</b> - проверка прокси без проверки на анонимность; 
  * возвращается булево значение 
  * <b>getit:000.000.000.000:1234:ProxyType</b> - проверка прокси;
  * возвращается либо поданный на проверку адрес, если он рабочий; Если поданный
@@ -36,8 +38,10 @@ public class SenPitServer extends Thread {
 	Sema sema;
 	public boolean isworking = true;
 
-	//static String testLink = "http://google.ru";
-	public static final String testLink = "https://twitter.com";
+	public static final String testLinkSSL = "https://twitter.com";
+	public static final String testLinkAn = "http://helpchildren.online/reqwinfo/getreqwinfo?";
+	public static final String AnonymousPhrase = "IsAnonymous:1";
+
 	static int timeout = 30000; // время ожидания ответа (в милисекундах)
 
 	public static void main(String args[]) throws IOException {
@@ -123,12 +127,16 @@ public class SenPitServer extends Thread {
 			String comm = sp[0].toLowerCase();
 
 			switch (comm) {
+			case "checkanm":
+				res = check(proxyIP, proxyPort, proxyType, true); //вызываем функцию проверки
+				break;
+
 			case "check":
-				res = check(proxyIP, proxyPort, proxyType); //вызываем функцию проверки
+				res = check(proxyIP, proxyPort, proxyType, false); //вызываем функцию проверки
 				break;
 
 			case "getit":
-				res = check(proxyIP, proxyPort, proxyType); //вызываем функцию проверки
+				res = check(proxyIP, proxyPort, proxyType, false); //вызываем функцию проверки
 				break;
 
 			case "stops":
@@ -163,7 +171,7 @@ public class SenPitServer extends Thread {
 		} // вывод исключений
 	}
 
-	private boolean check(String pHost, int pPort, String pType) {
+	private boolean check(String pHost, int pPort, String pType, boolean DoCheckANM) {
 		SocketAddress addr = new InetSocketAddress(pHost, pPort);
 		Proxy.Type _pType = (pType.equals("HTTP") ? Proxy.Type.HTTP
 				: Proxy.Type.SOCKS);
@@ -171,13 +179,40 @@ public class SenPitServer extends Thread {
 		HttpURLConnection urlConn = null;
 		URL url;
 		try {
-			url = new URL(testLink);
+			url = new URL(testLinkSSL);
 			urlConn = (HttpURLConnection) url.openConnection(httpProxy);
 			urlConn.setConnectTimeout(timeout);
+			urlConn.setUseCaches(false);
 			urlConn.connect();
-			Map<String, List<String>> headers =  urlConn.getHeaderFields();
-			IsAnonymous(pHost, urlConn.getHeaderFields());
-			return (urlConn.getResponseCode() == 200);
+			if (urlConn.getResponseCode() != 200) 
+				return false;
+
+			if (!DoCheckANM) 
+				return true;
+
+			urlConn.disconnect();
+			// Проверка анонимности
+			url = new URL(testLinkAn);
+			urlConn = (HttpURLConnection) url.openConnection(httpProxy);
+			urlConn.setConnectTimeout(timeout);
+			urlConn.setUseCaches(false);
+			urlConn.connect();
+			if (urlConn.getResponseCode() != 200) 
+				return false;
+			BufferedReader in = new BufferedReader(
+			        new InputStreamReader(urlConn.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();		
+			//System.out.println(response.toString());
+			
+			urlConn.disconnect();
+	
+			return (response.indexOf(AnonymousPhrase) > -1);
 		} catch (SocketException e) {
 			return false;
 		} catch (SocketTimeoutException e) {
@@ -188,19 +223,4 @@ public class SenPitServer extends Thread {
 		}
 	}
 	
-	private boolean IsAnonymous(String pHost, Map<String, List<String>> headers) {
-		boolean res = true;
-
-		for (Map.Entry<String, List<String>> header : headers.entrySet())
-		{
-		    System.out.println(header.getKey() + "/");
-			
-			for (String val : header.getValue()) {
-			    System.out.println(val);			
-			}
-		}	
-			return res;
-			
-		}
-
 }

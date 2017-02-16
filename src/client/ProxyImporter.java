@@ -15,11 +15,13 @@ public class ProxyImporter implements Runnable {
 
 	private JTextArea memo;
 	private JTextArea memostatus;
+	private boolean DoCheckANM;
 	ArrayList<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
 
-	public ProxyImporter(JTextArea memo, JTextArea memostatus) {
+	public ProxyImporter(JTextArea memo, JTextArea memostatus, boolean DoCheckANM) {
 		this.memo = memo;
 		this.memostatus = memostatus;
+		this.DoCheckANM = DoCheckANM;
 	}
 
 	/**
@@ -39,7 +41,7 @@ public class ProxyImporter implements Runnable {
 			//Future<?> runnableFuture = cachedPool.submit(new SenPitClient(data, dbConnector, i, memo));
 			
 			final CompletableFuture<Void> runnableFuture = CompletableFuture.runAsync( new SenPitClient(data,
-					dbConnector, i, memo), cachedPool);
+					dbConnector, i, memo, DoCheckANM), cachedPool);
 			futures.add(runnableFuture);
 			i++;
 		}

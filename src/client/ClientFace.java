@@ -22,6 +22,7 @@ public class ClientFace extends JFrame {
 	private static final long serialVersionUID = -1441851739039937804L;
 	JTextArea memo;
 	JButton btImportProxyFromTXT;
+	JButton btImportProxyFromTXTanm;
 	JButton btCheckDBproxies;
 	JButton btImportBanners;
 	JButton btMakeUproxy;
@@ -33,7 +34,7 @@ public class ClientFace extends JFrame {
 		windowContent.setLayout(bl);
 
 		JPanel p1 = new JPanel();
-		GridLayout gl = new GridLayout(4, 2);
+		GridLayout gl = new GridLayout(5, 2);
 		p1.setLayout(gl);
 
 		JPanel p2 = new JPanel();
@@ -56,11 +57,20 @@ public class ClientFace extends JFrame {
 		memo3.setEditable(false);
 		memo3.append("");
 
-		JLabel label1 = new JLabel("Import proxies from proxy.txt to DB");
+		JLabel label1 = new JLabel("Import proxies from proxy.txt to DB + Check anonymous");
 		btImportProxyFromTXT = new JButton("Start");
 		btImportProxyFromTXT.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ProxyImporter pimp = new ProxyImporter(memo, memo3);
+				ProxyImporter pimp = new ProxyImporter(memo, memo3, true);
+				pimp.run();
+			}
+		});
+
+		JLabel label1_1 = new JLabel("Import proxies from proxy.txt to DB");
+		btImportProxyFromTXTanm = new JButton("Start");
+		btImportProxyFromTXTanm.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ProxyImporter pimp = new ProxyImporter(memo, memo3, false);
 				pimp.run();
 			}
 		});
@@ -94,6 +104,8 @@ public class ClientFace extends JFrame {
 		// Добавляем компоненты на панель
 		p1.add(label1);
 		p1.add(btImportProxyFromTXT);
+		p1.add(label1_1);
+		p1.add(btImportProxyFromTXTanm);		
 		p1.add(label2);
 		p1.add(btCheckDBproxies);
 		p1.add(label3);

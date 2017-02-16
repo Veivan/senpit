@@ -18,6 +18,7 @@ public class SenPitClient extends Thread {
 	private Socket s;
 	private String command;
 	private int norder;
+	private boolean DoCheckANM;
 
 	private JTextArea memo;
 
@@ -25,7 +26,7 @@ public class SenPitClient extends Thread {
 	 * Конструктор. На входе строка вида "94.177.172.141:8080"
 	 */
 	public SenPitClient(String data, DbConnectorSenPit dbConnector, int norder,
-			JTextArea memo) {
+			JTextArea memo, boolean DoCheckANM) {
 		String[] sp = data.split(":");
 		if (sp.length > 1) {
 			proxyIP = sp[0];
@@ -34,6 +35,7 @@ public class SenPitClient extends Thread {
 		this.dbConnector = dbConnector;
 		this.norder = norder;
 		this.memo = memo;
+		this.DoCheckANM = DoCheckANM;
 	}
 
 	@Override
@@ -52,7 +54,7 @@ public class SenPitClient extends Thread {
 			// args[0] = "getit" + "\n" + s.getInetAddress().getHostAddress() +
 			// ":" + s.getLocalPort();
 
-			command = String.format("%s:%s:%d:%s", "check", proxyIP, proxyPort,
+			command = String.format("%s:%s:%d:%s", (DoCheckANM ? "checkanm" : "check"), proxyIP, proxyPort,
 					proxyType);
 
 			String data = "";
