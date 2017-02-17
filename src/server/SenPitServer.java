@@ -179,40 +179,40 @@ public class SenPitServer extends Thread {
 		HttpURLConnection urlConn = null;
 		URL url;
 		try {
+			// Сначала проверка анонимности. Если не анонимный, дальше не проверяем
+			if (DoCheckANM) 
+			{
+				url = new URL(testLinkAn);
+				urlConn = (HttpURLConnection) url.openConnection(httpProxy);
+				urlConn.setConnectTimeout(timeout);
+				urlConn.setUseCaches(false);
+				urlConn.connect();
+				if (urlConn.getResponseCode() != 200) 
+					return false;
+				BufferedReader in = new BufferedReader(
+				        new InputStreamReader(urlConn.getInputStream()));
+				String inputLine;
+				StringBuffer response = new StringBuffer();
+	
+				while ((inputLine = in.readLine()) != null) {
+					response.append(inputLine);
+				}
+				in.close();		
+				//System.out.println(response.toString());
+				boolean IsAnm = response.indexOf(AnonymousPhrase) > -1;
+				urlConn.disconnect();
+				if (!IsAnm) 
+					return false;				
+			}	
+
 			url = new URL(testLinkSSL);
 			urlConn = (HttpURLConnection) url.openConnection(httpProxy);
 			urlConn.setConnectTimeout(timeout);
 			urlConn.setUseCaches(false);
 			urlConn.connect();
-			if (urlConn.getResponseCode() != 200) 
-				return false;
-
-			if (!DoCheckANM) 
-				return true;
-
+			boolean IsSsl = urlConn.getResponseCode() == 200;
 			urlConn.disconnect();
-			// Проверка анонимности
-			url = new URL(testLinkAn);
-			urlConn = (HttpURLConnection) url.openConnection(httpProxy);
-			urlConn.setConnectTimeout(timeout);
-			urlConn.setUseCaches(false);
-			urlConn.connect();
-			if (urlConn.getResponseCode() != 200) 
-				return false;
-			BufferedReader in = new BufferedReader(
-			        new InputStreamReader(urlConn.getInputStream()));
-			String inputLine;
-			StringBuffer response = new StringBuffer();
-
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
-			}
-			in.close();		
-			//System.out.println(response.toString());
-			
-			urlConn.disconnect();
-	
-			return (response.indexOf(AnonymousPhrase) > -1);
+			return IsSsl;
 		} catch (SocketException e) {
 			return false;
 		} catch (SocketTimeoutException e) {
