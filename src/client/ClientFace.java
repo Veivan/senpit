@@ -102,7 +102,7 @@ public class ClientFace {
 			btImportProxyFromTXT = new JButton("Start");
 			btImportProxyFromTXT.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					ProxyImporter pimp = new ProxyImporter(memo, memo3, true);
+					ProxyImporterOld pimp = new ProxyImporterOld(memo, memo3, true);
 					pimp.run();
 				}
 			});
@@ -111,7 +111,7 @@ public class ClientFace {
 			btImportProxyFromTXTanm = new JButton("Start");
 			btImportProxyFromTXTanm.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					ProxyImporter pimp = new ProxyImporter(memo, memo3, false);
+					ProxyImporterOld pimp = new ProxyImporterOld(memo, memo3, false);
 					pimp.run();
 				}
 			});

@@ -26,18 +26,20 @@ public class ProgressWorker extends SwingWorker {
         return null;
     }
 
-    @Override
-    protected void process(List chunks) {
-    	// TODO Auto-generated method stub
-    	//super.process(chunks);
+	@Override
+	protected void process(List chunks) {
+		// TODO Auto-generated method stub
+		// super.process(chunks);
 		for (Object number : chunks) {
 			textArea.append(number.toString() + "\n");
 		}
-   }        
+	}
+
 	/**
 	 * This method is called in EDT after {@link #doInBackground()} is finished.
 	 */
 	@Override
 	protected void done() {
-		textArea.append("Finita");	}
+		textArea.append("Finita");
+	}
 }

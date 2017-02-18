@@ -2,49 +2,36 @@ package client;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.concurrent.Callable;
 
-import javax.swing.JTextArea;
-
-public class SenPitClient extends Thread {
+public class SenPitClient implements Callable {
 	static final int port = 1967;
 	// Работать будем только с HTTP
 	static String proxyType = "HTTP";
-
-	private String proxyIP = "181.39.11.132";
-	private int proxyPort = 80;
-
-	private DbConnectorSenPit dbConnector = null;
+	private String proxyIP;
+	private int proxyPort;
 
 	private Socket s;
 	private String command;
-	private int norder;
 	private boolean DoCheckANM;
 
-	private JTextArea memo;
-
 	/**
-	 * Конструктор. На входе строка вида "94.177.172.141:8080"
+	 * Конструктор. 
 	 */
-	public SenPitClient(String data, DbConnectorSenPit dbConnector, int norder,
-			JTextArea memo, boolean DoCheckANM) {
-		String[] sp = data.split(":");
-		if (sp.length > 1) {
-			proxyIP = sp[0];
-			proxyPort = Integer.parseInt(sp[1]);
-		}
-		this.dbConnector = dbConnector;
-		this.norder = norder;
-		this.memo = memo;
+	public SenPitClient(String proxyIP, int proxyPort, boolean DoCheckANM) {
+		this.proxyIP = proxyIP;
+		this.proxyPort = proxyPort;
 		this.DoCheckANM = DoCheckANM;
 	}
 
 	@Override
-	public void run() {
-		CheckIt();
+	public Object call() {
+		return CheckIt();
 	}
 
-	private void CheckIt() {
-		String msg = "N" + norder + " " + proxyIP + ":" + proxyPort;
+	private boolean CheckIt() {
+		boolean result = false;
+
 		try {
 			// открываем сокет и коннектимся к localhost:port
 			// получаем сокет сервера
@@ -59,11 +46,7 @@ public class SenPitClient extends Thread {
 
 			String data = "";
 			for (int i = 0; i < 2; i++) {
-				utils.CustomPrint(memo, msg + String.format(" try (%d)", i));
-
-				// s.getOutputStream().write(args[0].getBytes());
 				s.getOutputStream().write(command.getBytes());
-
 				// читаем ответ
 				byte buf[] = new byte[64 * 1024];
 				int r = s.getInputStream().read(buf);
@@ -71,21 +54,10 @@ public class SenPitClient extends Thread {
 					data = new String(buf, 0, r);
 					break;
 				}
-			}
-			
-			if (dbConnector != null) {
-				int isalive = data.isEmpty() ? 0 : 1;
-				dbConnector.SaveProxy(proxyIP, proxyPort, isalive);
-			}
-			// выводим ответ в консоль
-			if (data.isEmpty())
-				msg += " is bad";
-			else
-				msg += " is ok";
-			utils.CustomPrint(memo, msg);
+			}		
+			result = !data.isEmpty();
 		} catch (Exception e) {
-			msg = "client error: " + e.getMessage();
-			utils.CustomPrint(memo, msg);
+			e.printStackTrace();
 		} finally {
 			try {
 				s.close();
@@ -93,11 +65,7 @@ public class SenPitClient extends Thread {
 				e.printStackTrace();
 			}
 		}
-
+		return result;
 	}
 
-	/*
-	 * public static void main(String args[]) throws IOException {
-	 * ProxyImporter.ImportFromTxt(null); CheckProxyDB(); }
-	 */
 }
