@@ -6,10 +6,8 @@ import java.util.concurrent.Executors;
 
 import javax.swing.JTextArea;
 
-import client.utils;
-
 /**
- * Прверка прокси, хранящихся в БД и удаление дохлых
+ * Проверка прокси, хранящихся в БД и удаление дохлых
  */
 public class dbProxyChecker {
 
