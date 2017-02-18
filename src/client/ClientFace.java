@@ -51,11 +51,10 @@ public class ClientFace {
 		});
 	}
 
+	/**
+	 * 
+	 */
 	public class TestPane extends JPanel {
-
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = -5847892839183869925L;
 		private JProgressBar progressBar;
 		private JTextArea memo;
@@ -65,10 +64,10 @@ public class ClientFace {
 		JButton btImportBanners;
 		JButton btMakeUproxy;
 
+		ProgressWorker worker;
+
 		public TestPane() {
 
-			// setLayout(new GridBagLayout());
-			// setLayout(new GridLayout(3, 1));
 			setLayout(new BorderLayout());
 
 			JPanel p1 = new JPanel();
@@ -88,7 +87,6 @@ public class ClientFace {
 			add("South", p3);
 
 			progressBar = new JProgressBar(0, 100);
-			progressBar.setIndeterminate(true);
 
 			memo = new JTextArea();
 			JScrollPane scroll = new JScrollPane(memo,
@@ -133,7 +131,7 @@ public class ClientFace {
 					// SenPitClient.CheckProxyDB(memo);
 					// JOptionPane.showMessageDialog(null,
 					// "Import Banners to DB");
-					// task.execute();
+					worker.execute();
 				}
 			});
 
@@ -163,7 +161,7 @@ public class ClientFace {
 			p3.add(memo3);
 			p3.add(progressBar);
 
-			ProgressWorker worker = new ProgressWorker(memo);
+			worker = new ProgressWorker(memo);
 			worker.addPropertyChangeListener(new PropertyChangeListener() {
 				@Override
 				public void propertyChange(PropertyChangeEvent evt) {
@@ -172,16 +170,12 @@ public class ClientFace {
 					 * SwingWorker worker = (SwingWorker) evt.getSource();
 					 * switch (worker.getState()) { case DONE: // Clean up
 					 * here... break; } } else
-					 */if ("progress".equalsIgnoreCase(evt.getPropertyName())) {
-						// You could get the SwingWorker and use getProgress,
-						// but I'm lazy...
-						System.out.println(EventQueue.isDispatchThread());
-						progressBar.setIndeterminate(false);
+					 */
+					if ("progress".equalsIgnoreCase(evt.getPropertyName())) {
 						progressBar.setValue((Integer) evt.getNewValue());
 					}
 				}
 			});
-			worker.execute();
 
 		}
 
