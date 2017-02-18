@@ -1,19 +1,25 @@
 package client;
 
 import java.awt.BorderLayout;
+import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+
+import test.ProgressWorker;
 
 /**
  * 
@@ -26,6 +32,9 @@ public class ClientFace extends JFrame {
 	JButton btCheckDBproxies;
 	JButton btImportBanners;
 	JButton btMakeUproxy;
+	final JProgressBar progressBar = new JProgressBar(0, 100);
+	//PrimeNumbersTask task = new PrimeNumbersTask(memo, 500);
+	ProgressWorker task = new ProgressWorker(memo);
 
 	ClientFace() {
 		// Создаём панели
@@ -42,8 +51,8 @@ public class ClientFace extends JFrame {
 		p2.setLayout(fl);
 
 		JPanel p3 = new JPanel();
-		BorderLayout bl3 = new BorderLayout();
-		// GridLayout bl3 = new GridLayout(2, 1);
+		// BorderLayout bl3 = new BorderLayout();
+		GridLayout bl3 = new GridLayout(1, 2);
 		p3.setLayout(bl3);
 
 		// Создаём компоненты в памяти
@@ -57,7 +66,8 @@ public class ClientFace extends JFrame {
 		memo3.setEditable(false);
 		memo3.append("");
 
-		JLabel label1 = new JLabel("Import proxies from proxy.txt to DB + Check anonymous");
+		JLabel label1 = new JLabel(
+				"Import proxies from proxy.txt to DB + Check anonymous");
 		btImportProxyFromTXT = new JButton("Start");
 		btImportProxyFromTXT.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -88,7 +98,8 @@ public class ClientFace extends JFrame {
 		btImportBanners.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// SenPitClient.CheckProxyDB(memo);
-				JOptionPane.showMessageDialog(null, "Import Banners to DB");
+				// JOptionPane.showMessageDialog(null, "Import Banners to DB");
+				task.execute();
 			}
 		});
 
@@ -105,7 +116,7 @@ public class ClientFace extends JFrame {
 		p1.add(label1);
 		p1.add(btImportProxyFromTXT);
 		p1.add(label1_1);
-		p1.add(btImportProxyFromTXTanm);		
+		p1.add(btImportProxyFromTXTanm);
 		p1.add(label2);
 		p1.add(btCheckDBproxies);
 		p1.add(label3);
@@ -115,6 +126,7 @@ public class ClientFace extends JFrame {
 
 		p2.add(scroll);
 		p3.add(memo3);
+		p3.add(progressBar);
 
 		windowContent.add("North", p1);
 		windowContent.add("Center", p2);
@@ -132,16 +144,25 @@ public class ClientFace extends JFrame {
 				System.exit(0);
 			}
 		});
-	}
 
-	public static void main(String[] args) {
-		javax.swing.SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				// JFrame.setDefaultLookAndFeelDecorated(true);
-				new ClientFace();
+		task.addPropertyChangeListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if ("progress".equals(evt.getPropertyName())) {
+					progressBar.setValue((Integer) evt.getNewValue());
+				}
 			}
 		});
 
+	}
+
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				new ClientFace();
+			}
+		});
 	}
 
 }
