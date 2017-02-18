@@ -20,8 +20,6 @@ import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import test.ProgressWorker;
-
 public class ClientFace {
 
 	public static void main(String[] args) {
@@ -64,7 +62,6 @@ public class ClientFace {
 		JButton btImportBanners;
 		JButton btMakeUproxy;
 
-		ProgressWorker worker;
 		ProxyImporter workerPrimp; 
 
 		public TestPane() {
@@ -103,8 +100,6 @@ public class ClientFace {
 			btImportProxyFromTXT = new JButton("Start");
 			btImportProxyFromTXT.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					//ProxyImporterOld pimp = new ProxyImporterOld(memo, memo3, true);
-					//pimp.run();
 					execImportProxy(true);
 				}
 			});
@@ -113,8 +108,7 @@ public class ClientFace {
 			btImportProxyFromTXTanm = new JButton("Start");
 			btImportProxyFromTXTanm.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					ProxyImporterOld pimp = new ProxyImporterOld(memo, memo3, false);
-					pimp.run();
+					execImportProxy(false);
 				}
 			});
 
@@ -131,10 +125,8 @@ public class ClientFace {
 			btImportBanners.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					// SenPitClient.CheckProxyDB(memo);
-					// JOptionPane.showMessageDialog(null,
-					// "Import Banners to DB");
-                    execTask();
-				}
+					JOptionPane.showMessageDialog(null, "Import Banners to DB");
+ 				}
 			});
 
 			JLabel label4 = new JLabel("Make uproxy from unsort");
@@ -162,8 +154,6 @@ public class ClientFace {
 
 			p3.add(memo3);
 			p3.add(progressBar);
-
-
 		}
 
 		private void execImportProxy(boolean DoCheckANM) {
@@ -177,25 +167,6 @@ public class ClientFace {
 				}
 			});
 			workerPrimp.execute();
-		}
-
-		private void execTask() {
-			worker = new ProgressWorker(memo);
-			worker.addPropertyChangeListener(new PropertyChangeListener() {
-				@Override
-				public void propertyChange(PropertyChangeEvent evt) {
-					/*
-					 * if ("state".equalsIgnoreCase(evt.getPropertyName())) {
-					 * SwingWorker worker = (SwingWorker) evt.getSource();
-					 * switch (worker.getState()) { case DONE: // Clean up
-					 * here... break; } } else
-					 */
-					if ("progress".equalsIgnoreCase(evt.getPropertyName())) {
-						progressBar.setValue((Integer) evt.getNewValue());
-					}
-				}
-			});
-			worker.execute();
 		}
 
 		@Override
