@@ -19,9 +19,7 @@ public class dbProxyChecker {
 		DbConnectorSenPit dbConnector = new DbConnectorSenPit();  
 		ExecutorService cachedPool = Executors.newCachedThreadPool();		
 		List<String> list = dbConnector.GetProxsFromDB();
-		utils.CustomPrint(memo, null);
 		message = "Всего прокси : " + list.size();
-		utils.CustomPrint(memo, message);
 		int i = 0;
 		for (String str : list) {			
 		//	cachedPool.submit(new SenPitClient(str, dbConnector, i, memo, false));

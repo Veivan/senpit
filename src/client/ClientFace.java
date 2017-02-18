@@ -65,6 +65,7 @@ public class ClientFace {
 		JButton btMakeUproxy;
 
 		ProgressWorker worker;
+		ProxyImporter workerPrimp; 
 
 		public TestPane() {
 
@@ -102,8 +103,9 @@ public class ClientFace {
 			btImportProxyFromTXT = new JButton("Start");
 			btImportProxyFromTXT.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					ProxyImporterOld pimp = new ProxyImporterOld(memo, memo3, true);
-					pimp.run();
+					//ProxyImporterOld pimp = new ProxyImporterOld(memo, memo3, true);
+					//pimp.run();
+					execImportProxy(true);
 				}
 			});
 
@@ -162,6 +164,19 @@ public class ClientFace {
 			p3.add(progressBar);
 
 
+		}
+
+		private void execImportProxy(boolean DoCheckANM) {
+			workerPrimp = new ProxyImporter(memo, DoCheckANM);
+			workerPrimp.addPropertyChangeListener(new PropertyChangeListener() {
+				@Override
+				public void propertyChange(PropertyChangeEvent evt) {
+					if ("progress".equalsIgnoreCase(evt.getPropertyName())) {
+						progressBar.setValue((Integer) evt.getNewValue());
+					}
+				}
+			});
+			workerPrimp.execute();
 		}
 
 		private void execTask() {

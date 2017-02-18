@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.Callable;
 
-public class SenPitClient implements Callable {
+public class SenPitClient implements Callable<Object> {
 	static final int port = 1967;
 	// Работать будем только с HTTP
 	static String proxyType = "HTTP";
@@ -26,7 +26,9 @@ public class SenPitClient implements Callable {
 
 	@Override
 	public Object call() {
-		return CheckIt();
+		boolean IsOk = CheckIt();
+		WorkerResult res = new WorkerResult(proxyIP, proxyPort, IsOk);
+		return res;
 	}
 
 	private boolean CheckIt() {

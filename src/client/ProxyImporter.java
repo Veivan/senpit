@@ -48,22 +48,27 @@ public class ProxyImporter extends SwingWorker<String, String> {
 			}
 		}
 		in.close();
+		cachedPool.shutdown();
 
+		int taskQueuesize = taskQueue.size();
 		int progress = 0;
+		int countdone = 0;
 		while (!taskQueue.isEmpty()) {
-			int taskQueuesize = taskQueue.size();
 			Future<?> checkTask = taskQueue.remove();
 			if (checkTask.isDone()) {
-				int isalive = ((boolean)checkTask.get() == false) ? 0 : 1;
+				countdone++;
+				WorkerResult res = (WorkerResult) checkTask.get();
+				int isalive = res.isIsOk() ? 1 : 0;
+				proxyIP = res.getProxyIP();
+				proxyPort = res.getProxyPort();
 				dbConnector.SaveProxy(proxyIP, proxyPort, isalive);
-				String message = String.format("%s:%d is %s", proxyIP, proxyPort, (isalive == 0 ? "bad" : "ok"));
-				progress += 20;
-	            setProgress(Math.round((taskQueuesize - 1 / (float) taskQueuesize) * 100f));
+				String message = String.format("%s:%d is %s", proxyIP,
+						proxyPort, (isalive == 0 ? "bad" : "ok"));
+				progress = Math.round((countdone / (float) taskQueuesize) * 100f);
 				setProgress(progress);
 				publish(message);
 			} else
 				taskQueue.add(checkTask);
-
 		}
 
 		return null;
@@ -81,7 +86,7 @@ public class ProxyImporter extends SwingWorker<String, String> {
 	 */
 	@Override
 	protected void done() {
-		textArea.append("Finita");
+		textArea.append("Finita\n");
 	}
 
 }
