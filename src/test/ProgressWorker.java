@@ -7,7 +7,7 @@ import javax.swing.SwingWorker;
 
 public class ProgressWorker extends SwingWorker {
 
-    public static final int MAX = 1000;
+    public static final int MAX = 50;
 	private JTextArea textArea;
 
 	public ProgressWorker(JTextArea textArea) {
@@ -16,7 +16,9 @@ public class ProgressWorker extends SwingWorker {
 
     @Override
     protected Object doInBackground() throws Exception {
-        for (int index = 0; index < MAX; index++) {
+		setProgress(0);
+
+		for (int index = 0; index < MAX; index++) {
             Thread.sleep(250);
             setProgress(Math.round((index / (float) MAX) * 100f));
             publish(1);
@@ -32,4 +34,10 @@ public class ProgressWorker extends SwingWorker {
 			textArea.append(number.toString() + "\n");
 		}
    }        
+	/**
+	 * This method is called in EDT after {@link #doInBackground()} is finished.
+	 */
+	@Override
+	protected void done() {
+		textArea.append("Finita");	}
 }

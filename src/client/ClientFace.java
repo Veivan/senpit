@@ -131,7 +131,7 @@ public class ClientFace {
 					// SenPitClient.CheckProxyDB(memo);
 					// JOptionPane.showMessageDialog(null,
 					// "Import Banners to DB");
-					worker.execute();
+                    execTask();
 				}
 			});
 
@@ -161,6 +161,10 @@ public class ClientFace {
 			p3.add(memo3);
 			p3.add(progressBar);
 
+
+		}
+
+		private void execTask() {
 			worker = new ProgressWorker(memo);
 			worker.addPropertyChangeListener(new PropertyChangeListener() {
 				@Override
@@ -176,7 +180,7 @@ public class ClientFace {
 					}
 				}
 			});
-
+			worker.execute();
 		}
 
 		@Override
