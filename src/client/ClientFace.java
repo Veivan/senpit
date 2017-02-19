@@ -64,6 +64,7 @@ public class ClientFace {
 		JButton btMakeUproxy;
 
 		ProxyImporter workerPrimp; 
+		dbProxyChecker workerDBchecker;
 
 		public TestPane() {
 
@@ -118,7 +119,7 @@ public class ClientFace {
 			btCheckDBproxies = new JButton("Start");
 			btCheckDBproxies.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					dbProxyChecker.CheckProxyDB(memo);
+					execCheckDBProxy();
 				}
 			});
 
@@ -170,6 +171,19 @@ public class ClientFace {
 			});
 			workerPrimp.execute();
 		}
+		
+		private void execCheckDBProxy() {
+			workerDBchecker = new dbProxyChecker(memo);
+			workerDBchecker.addPropertyChangeListener(new PropertyChangeListener() {
+				@Override
+				public void propertyChange(PropertyChangeEvent evt) {
+					if ("progress".equalsIgnoreCase(evt.getPropertyName())) {
+						progressBar.setValue((Integer) evt.getNewValue());
+					}
+				}
+			});
+			workerDBchecker.execute();
+		}		
 
 		@Override
 		public Dimension getPreferredSize() {
