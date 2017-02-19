@@ -79,4 +79,27 @@ public class DbConnectorSenPit {
 		return list;
 	}
 
+	/**
+	 * Returns proxies count from DB
+	 */
+	public int GetProxsCountFromDB() {
+		int prcount = 0;
+		try {
+			dbConnect();
+			String query = "SELECT [total] = COUNT(*) FROM [dbo].[mProxies]";
+			PreparedStatement pstmt = conn.prepareStatement(query);
+			ResultSet rs = pstmt.executeQuery();
+			rs.next();
+			prcount = rs.getInt("total");
+			pstmt.close();
+			pstmt = null;
+			if (conn != null)
+				conn.close();
+			conn = null;
+		} catch (Exception e) {
+			System.out.println("GetProxsCountFromDB exception : " + e.getMessage());
+		}
+		return prcount;
+	}
+
 }

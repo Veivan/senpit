@@ -16,10 +16,17 @@ public class ProxyImporter extends SwingWorker<String, String> {
 
 	private JTextArea textArea;
 	private boolean DoCheckANM;
+	
+	private int prcountbefore;
+	private int prcountafter;
+	private int taskQueuesize;
 
+	DbConnectorSenPit dbConnector;
+	
 	public ProxyImporter(JTextArea textArea, boolean DoCheckANM) {
 		this.textArea = textArea;
 		this.DoCheckANM = DoCheckANM;
+		dbConnector = new DbConnectorSenPit();
 	}
 
 	@Override
@@ -28,7 +35,6 @@ public class ProxyImporter extends SwingWorker<String, String> {
 		int proxyPort = 0;
 		setProgress(0);
 
-		DbConnectorSenPit dbConnector = new DbConnectorSenPit();
 		ExecutorService cachedPool = Executors.newCachedThreadPool();
 		Queue<Future<?>> taskQueue = new LinkedList<Future<?>>();
 
@@ -50,7 +56,8 @@ public class ProxyImporter extends SwingWorker<String, String> {
 		in.close();
 		cachedPool.shutdown();
 
-		int taskQueuesize = taskQueue.size();
+		prcountbefore = dbConnector.GetProxsCountFromDB();
+		taskQueuesize = taskQueue.size();
 		int progress = 0;
 		int countdone = 0;
 		while (!taskQueue.isEmpty()) {
@@ -86,6 +93,14 @@ public class ProxyImporter extends SwingWorker<String, String> {
 	 */
 	@Override
 	protected void done() {
+		prcountafter = dbConnector.GetProxsCountFromDB();
+		int newcnt = prcountafter - prcountbefore;
+
+		textArea.append(String.format("Прокси в БД перед импортом : %d \n", prcountbefore));
+		textArea.append(String.format("Прокси для обработки : %d \n", taskQueuesize));
+		textArea.append(String.format("       негодные прокси : %d \n", taskQueuesize - Math.abs(newcnt)));
+		textArea.append(String.format("       добавлено новых : %d \n", newcnt));
+		textArea.append(String.format("Прокси в БД после импорта : %d \n", prcountafter));
 		textArea.append("Finita\n");
 	}
 

@@ -3,6 +3,7 @@ package client;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -87,6 +88,7 @@ public class ClientFace {
 			progressBar = new JProgressBar(0, 100);
 
 			memo = new JTextArea();
+			memo.setFont(new Font("Serif", Font.PLAIN, 14));
 			JScrollPane scroll = new JScrollPane(memo,
 					JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 					JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
