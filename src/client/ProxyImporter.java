@@ -8,6 +8,7 @@ import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
@@ -54,15 +55,28 @@ public class ProxyImporter extends SwingWorker<String, String> {
 			}
 		}
 		in.close();
-		cachedPool.shutdown();
 
+		try {
+			cachedPool.shutdown();
+			cachedPool.awaitTermination(120, TimeUnit.SECONDS);
+		}
+		catch (InterruptedException e) {
+		    System.err.println("tasks interrupted");
+		}
+		finally {
+		    if (!cachedPool.isTerminated()) {
+		        System.err.println("cancel non-finished tasks");
+		    }
+		    cachedPool.shutdownNow();
+		    System.out.println("shutdown finished");
+		}
 		prcountbefore = dbConnector.GetProxsCountFromDB();
 		taskQueuesize = taskQueue.size();
 		int progress = 0;
 		int countdone = 0;
 		while (!taskQueue.isEmpty()) {
 			Future<?> checkTask = taskQueue.remove();
-			if (checkTask.isDone()) {
+			if (checkTask.isDone() ||  checkTask.isCancelled()) {
 				countdone++;
 				WorkerResult res = (WorkerResult) checkTask.get();
 				int isalive = res.isIsOk() ? 1 : 0;
@@ -74,8 +88,8 @@ public class ProxyImporter extends SwingWorker<String, String> {
 				progress = Math.round((countdone / (float) taskQueuesize) * 100f);
 				setProgress(progress);
 				publish(message);
-			} else
-				taskQueue.add(checkTask);
+			} 
+			//else taskQueue.add(checkTask);
 		}
 
 		return null;
