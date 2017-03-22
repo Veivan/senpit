@@ -210,8 +210,10 @@ public class SenPitServer extends Thread {
 			urlConn.disconnect();
 			return IsSsl ? RetCodes.Valid : RetCodes.NotSSL;
 		} catch (SocketException e) {
+			System.out.println("SocketException: " + e);
 			return RetCodes.SocketException;
 		} catch (SocketTimeoutException e) {
+			System.out.println("SocketTimeoutException: " + e);
 			return RetCodes.SocketTimeoutException;
 		} catch (Exception e) {
 			System.out.println("Error: " + e);
