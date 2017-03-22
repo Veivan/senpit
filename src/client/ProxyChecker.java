@@ -17,6 +17,7 @@ public class ProxyChecker extends SwingWorker<String, String>{
 
 	private final JTextArea textArea;
 	private final IProxyProvider ProxyProvider;
+	private final IOuter outer;
 	private final boolean DoCheckANM;
 
 	private int prcountbefore;
@@ -26,9 +27,10 @@ public class ProxyChecker extends SwingWorker<String, String>{
 
 	DbConnectorSenPit dbConnector;
 
-	public ProxyChecker(JTextArea textArea, IProxyProvider ProxyProvider, boolean DoCheckANM) {
+	public ProxyChecker(JTextArea textArea, IProxyProvider ProxyProvider, boolean DoCheckANM, IOuter outer) {
 		this.textArea = textArea;
 		this.ProxyProvider = ProxyProvider;
+		this.outer = outer;
 		this.DoCheckANM = DoCheckANM;
 		dbConnector = new DbConnectorSenPit();
 	}
@@ -105,18 +107,8 @@ public class ProxyChecker extends SwingWorker<String, String>{
 	 */
 	@Override
 	protected void done() {
-		prcountafter = dbConnector.GetProxsCountFromDB();
-		int newcnt = prcountafter - prcountbefore;
-
-		textArea.append(String.format("Прокси в БД перед импортом : %d \n",
-				prcountbefore));
-		textArea.append(String.format("Прокси для обработки : %d \n",
-				taskQueuesize));
-		textArea.append(String.format("		валидные прокси : %d \n",
-				countvalid));
-		textArea.append(String.format("		добавлено новых : %d \n", newcnt));
-		textArea.append(String.format("Прокси в БД после импорта : %d \n",
-				prcountafter));
-		textArea.append("Finita\n");
+		prcountafter = dbConnector.GetProxsCountFromDB();	
+		if (outer != null)
+			outer.MakeOut(textArea, taskQueuesize, prcountbefore, prcountafter, countvalid);
 	}
 }

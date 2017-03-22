@@ -1,7 +1,11 @@
-package client;
+package customizer;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import client.DbConnectorSenPit;
+import client.IProxyProvider;
+import client.ProxyRecord;
 
 public class ProviderDB implements IProxyProvider {
 

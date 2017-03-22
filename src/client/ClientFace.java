@@ -21,6 +21,9 @@ import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import customizer.OuterDB;
+import customizer.ProviderDB;
+
 public class ClientFace {
 
 	public static void main(String[] args) {
@@ -65,6 +68,11 @@ public class ClientFace {
 
 		ProxyImporter workerPrimp; 
 		dbProxyChecker workerDBchecker;
+		
+		ProxyChecker workerProxyChecker; 
+		IOuter outer;
+		IProxyProvider proxyProvider;
+		
 
 		public TestPane() {
 
@@ -173,8 +181,13 @@ public class ClientFace {
 		}
 		
 		private void execCheckDBProxy() {
-			workerDBchecker = new dbProxyChecker(memo);
-			workerDBchecker.addPropertyChangeListener(new PropertyChangeListener() {
+			boolean DoCheckANM = false;
+			IOuter outer = new OuterDB();
+			IProxyProvider proxyProvider = new ProviderDB();
+			ProxyChecker workerProxyChecker = new ProxyChecker(memo, proxyProvider, DoCheckANM, outer);
+			
+			//workerDBchecker = new dbProxyChecker(memo);
+			workerProxyChecker.addPropertyChangeListener(new PropertyChangeListener() {
 				@Override
 				public void propertyChange(PropertyChangeEvent evt) {
 					if ("progress".equalsIgnoreCase(evt.getPropertyName())) {
@@ -182,7 +195,7 @@ public class ClientFace {
 					}
 				}
 			});
-			workerDBchecker.execute();
+			workerProxyChecker.execute();
 		}		
 
 		@Override

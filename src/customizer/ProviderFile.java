@@ -1,10 +1,13 @@
-package client;
+package customizer;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+import client.IProxyProvider;
+import client.ProxyRecord;
 
 public class ProviderFile implements IProxyProvider {
 
