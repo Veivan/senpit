@@ -1,15 +1,17 @@
 package client;
 
+import common.Constants.RetCodes;
+
 public class WorkerResult {
 	private String proxyIP;
 	private int proxyPort;
-	private boolean IsOk;
+	private RetCodes retcode;
 	
-	public WorkerResult(String proxyIP, int proxyPort, boolean IsOk)
+	public WorkerResult(String proxyIP, int proxyPort, RetCodes retcode)
 	{
 		this.proxyIP = proxyIP;
 		this.proxyPort = proxyPort;
-		this.IsOk = IsOk;
+		this.retcode = retcode;
 	}
 
 	public String getProxyIP() {
@@ -20,8 +22,8 @@ public class WorkerResult {
 		return proxyPort;
 	}
 
-	public boolean isIsOk() {
-		return IsOk;
+	public RetCodes getRetCode() {
+		return retcode;
 	}
 	
 }

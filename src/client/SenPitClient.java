@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.Callable;
 
+import common.Constants.RetCodes;
+
 public class SenPitClient implements Callable<Object> {
 	static final int port = 1967;
 	// Работать будем только с HTTP
@@ -26,13 +28,13 @@ public class SenPitClient implements Callable<Object> {
 
 	@Override
 	public Object call() {
-		boolean IsOk = CheckIt();
-		WorkerResult res = new WorkerResult(proxyIP, proxyPort, IsOk);
+		RetCodes retcode = CheckIt();
+		WorkerResult res = new WorkerResult(proxyIP, proxyPort, retcode);
 		return res;
 	}
 
-	private boolean CheckIt() {
-		boolean result = false;
+	private RetCodes CheckIt() {
+		RetCodes result = RetCodes.NullResult;
 
 		try {
 			// открываем сокет и коннектимся к localhost:port
@@ -57,7 +59,7 @@ public class SenPitClient implements Callable<Object> {
 					break;
 				}
 			}		
-			result = !data.isEmpty();
+			result = RetCodes.valueOf(data);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

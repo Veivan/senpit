@@ -13,6 +13,8 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 
+import common.Constants.RetCodes;
+
 public class ProxyImporter extends SwingWorker<String, String> {
 
 	private JTextArea textArea;
@@ -79,12 +81,12 @@ public class ProxyImporter extends SwingWorker<String, String> {
 			if (checkTask.isDone() ||  checkTask.isCancelled()) {
 				countdone++;
 				WorkerResult res = (WorkerResult) checkTask.get();
-				int isalive = res.isIsOk() ? 1 : 0;
+				int isalive = res.getRetCode() == RetCodes.Valid ? 1 : 0;
 				proxyIP = res.getProxyIP();
 				proxyPort = res.getProxyPort();
 				dbConnector.SaveProxy(proxyIP, proxyPort, isalive);
-				String message = String.format("%s:%d is %s", proxyIP,
-						proxyPort, (isalive == 0 ? "bad" : "ok"));
+				String message = String.format("%s:%d is %s - %s", proxyIP,
+						proxyPort, (isalive == 0 ? "bad" : "ok"), res.getRetCode());
 				progress = Math.round((countdone / (float) taskQueuesize) * 100f);
 				setProgress(progress);
 				publish(message);
@@ -112,7 +114,8 @@ public class ProxyImporter extends SwingWorker<String, String> {
 
 		textArea.append(String.format("Прокси в БД перед импортом : %d \n", prcountbefore));
 		textArea.append(String.format("Прокси для обработки : %d \n", taskQueuesize));
-		textArea.append(String.format("       негодные прокси : %d \n", taskQueuesize - Math.abs(newcnt)));
+		textArea.append(String.format("       негодные прокси : %d \n", 
+				taskQueuesize - (newcnt <= 0 ? 0 : newcnt)));
 		textArea.append(String.format("       добавлено новых : %d \n", newcnt));
 		textArea.append(String.format("Прокси в БД после импорта : %d \n", prcountafter));
 		textArea.append("Finita\n");

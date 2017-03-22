@@ -10,6 +10,8 @@ import java.util.concurrent.Future;
 import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 
+import common.Constants.RetCodes;
+
 /**
  * Проверка прокси, хранящихся в БД и удаление дохлых
  */
@@ -63,12 +65,12 @@ public class dbProxyChecker extends SwingWorker<String, String>{
 			if (checkTask.isDone()) {
 				countdone++;
 				WorkerResult res = (WorkerResult) checkTask.get();
-				int isalive = res.isIsOk() ? 1 : 0;
+				int isalive = res.getRetCode() == RetCodes.Valid ? 1 : 0;
 				proxyIP = res.getProxyIP();
 				proxyPort = res.getProxyPort();
 				dbConnector.SaveProxy(proxyIP, proxyPort, isalive);
-				String message = String.format("%s:%d is %s", proxyIP,
-						proxyPort, (isalive == 0 ? "bad" : "ok"));
+				String message = String.format("%s:%d is %s - %s", proxyIP,
+						proxyPort, (isalive == 0 ? "bad" : "ok"), res.getRetCode());
 				progress = Math.round((countdone / (float) taskQueuesize) * 100f);
 				setProgress(progress);
 				publish(message);

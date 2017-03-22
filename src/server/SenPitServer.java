@@ -16,20 +16,23 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 
+import common.Constants.RetCodes;
+
 /**
  *  ласс выполн€ет проверку прокси. ѕонимает команды : 
  * <b>stops</b> - остановка сервиса 
+ * 
  * <b>checkanm:000.000.000.000:1234:ProxyType</b> - проверка прокси + проверка на анонимность; 
- * возвращаетс€ булево значение 
+ * возвращаетс€ код Constants.RetCodes 
+
  * <b>check:000.000.000.000:1234:ProxyType</b> - проверка прокси без проверки на анонимность; 
- * возвращаетс€ булево значение 
- * <b>getit:000.000.000.000:1234:ProxyType</b> - проверка прокси;
- * возвращаетс€ либо поданный на проверку адрес, если он рабочий; ≈сли поданный
- * адрес не рабочий, то возвращаетс€ другой рабочий адрес из Ѕƒ.
+ * возвращаетс€ код Constants.RetCodes 
+ *
  * ProxyType может быть HTTP или Socks (в любом регистре)
  */
 
 public class SenPitServer extends Thread {
+
 	static final int port = 1967;
 	Socket s;
 	int num;
@@ -123,7 +126,7 @@ public class SenPitServer extends Thread {
 				proxyPort = Integer.parseInt(sp[2]);
 				proxyType = sp[3];
 			}
-			boolean res = false;
+			RetCodes res = RetCodes.NullResult;
 			String comm = sp[0].toLowerCase();
 
 			switch (comm) {
@@ -132,10 +135,6 @@ public class SenPitServer extends Thread {
 				break;
 
 			case "check":
-				res = check(proxyIP, proxyPort, proxyType, false); //вызываем функцию проверки
-				break;
-
-			case "getit":
 				res = check(proxyIP, proxyPort, proxyType, false); //вызываем функцию проверки
 				break;
 
@@ -153,10 +152,7 @@ public class SenPitServer extends Thread {
 			// добавл€ем данные об адресе сокета:
 			//data = "" + num + ": " + "\n" + data;
 
-			if (res == false)
-				data = "";
-			else
-				data = String.format("%s:%d:%s", proxyIP, proxyPort, proxyType);
+			data = res.toString();
 
 			// выводим данные:
 			os.write(data.getBytes());
@@ -171,7 +167,7 @@ public class SenPitServer extends Thread {
 		} // вывод исключений
 	}
 
-	private boolean check(String pHost, int pPort, String pType, boolean DoCheckANM) {
+	private RetCodes check(String pHost, int pPort, String pType, boolean DoCheckANM) {
 		SocketAddress addr = new InetSocketAddress(pHost, pPort);
 		Proxy.Type _pType = (pType.equals("HTTP") ? Proxy.Type.HTTP
 				: Proxy.Type.SOCKS);
@@ -188,7 +184,7 @@ public class SenPitServer extends Thread {
 				urlConn.setUseCaches(false);
 				urlConn.connect();
 				if (urlConn.getResponseCode() != 200) 
-					return false;
+					return RetCodes.AnmNotConnect;
 				BufferedReader in = new BufferedReader(
 				        new InputStreamReader(urlConn.getInputStream()));
 				String inputLine;
@@ -202,7 +198,7 @@ public class SenPitServer extends Thread {
 				boolean IsAnm = response.indexOf(AnonymousPhrase) > -1;
 				urlConn.disconnect();
 				if (!IsAnm) 
-					return false;				
+					return RetCodes.AnmNotAnonymous;				
 			}	
 
 			url = new URL(testLinkSSL);
@@ -212,14 +208,14 @@ public class SenPitServer extends Thread {
 			urlConn.connect();
 			boolean IsSsl = urlConn.getResponseCode() == 200;
 			urlConn.disconnect();
-			return IsSsl;
+			return IsSsl ? RetCodes.Valid : RetCodes.NotSSL;
 		} catch (SocketException e) {
-			return false;
+			return RetCodes.SocketException;
 		} catch (SocketTimeoutException e) {
-			return false;
+			return RetCodes.SocketTimeoutException;
 		} catch (Exception e) {
 			System.out.println("Error: " + e);
-			return false;
+			return RetCodes.Exception;
 		}
 	}
 	
