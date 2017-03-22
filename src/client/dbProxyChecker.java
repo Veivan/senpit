@@ -15,16 +15,17 @@ import common.Constants.RetCodes;
 /**
  * Проверка прокси, хранящихся в БД и удаление дохлых
  */
-public class dbProxyChecker extends SwingWorker<String, String>{
+public class dbProxyChecker extends SwingWorker<String, String> {
 
 	private JTextArea textArea;
-	
+
 	private int prcountbefore;
 	private int prcountafter;
 	private int taskQueuesize;
+	private int countvalid = 0;
 
 	DbConnectorSenPit dbConnector;
-	
+
 	public dbProxyChecker(JTextArea textArea) {
 		this.textArea = textArea;
 		dbConnector = new DbConnectorSenPit();
@@ -41,7 +42,7 @@ public class dbProxyChecker extends SwingWorker<String, String>{
 
 		List<String> list = dbConnector.GetProxsFromDB();
 		int i = 0;
-		for (String data : list) {			
+		for (String data : list) {
 			String[] sp = data.split(":");
 			if (sp.length > 1) {
 				proxyIP = sp[0];
@@ -65,19 +66,22 @@ public class dbProxyChecker extends SwingWorker<String, String>{
 			if (checkTask.isDone()) {
 				countdone++;
 				WorkerResult res = (WorkerResult) checkTask.get();
-				int isalive = res.getRetCode() == RetCodes.Valid ? 1 : 0;
+				boolean isValid = res.getRetCode() == RetCodes.Valid;
+				if (isValid)
+					countvalid++;
 				proxyIP = res.getProxyIP();
 				proxyPort = res.getProxyPort();
-				dbConnector.SaveProxy(proxyIP, proxyPort, isalive);
+				dbConnector.SaveProxy(proxyIP, proxyPort, isValid ? 1 : 0);
 				String message = String.format("%s:%d is %s - %s", proxyIP,
-						proxyPort, (isalive == 0 ? "bad" : "ok"), res.getRetCode());
-				progress = Math.round((countdone / (float) taskQueuesize) * 100f);
+						proxyPort, (isValid ? "ok" : "bad"), res.getRetCode());
+				progress = Math
+						.round((countdone / (float) taskQueuesize) * 100f);
 				setProgress(progress);
 				publish(message);
 			} else
 				taskQueue.add(checkTask);
 		}
-		
+
 		return null;
 	}
 
@@ -96,9 +100,13 @@ public class dbProxyChecker extends SwingWorker<String, String>{
 		prcountafter = dbConnector.GetProxsCountFromDB();
 		int badcnt = prcountbefore - prcountafter;
 
-		textArea.append(String.format("Прокси в БД перед проверкой : %d \n", prcountbefore));
+		textArea.append(String.format("Прокси в БД перед проверкой : %d \n",
+				prcountbefore));
+		textArea.append(String.format("		валидные прокси : %d \n",
+				countvalid));
 		textArea.append(String.format("		Удалено : %d \n", badcnt));
-		textArea.append(String.format("Прокси в БД после импорта : %d \n", prcountafter));
+		textArea.append(String.format("Прокси в БД после импорта : %d \n",
+				prcountafter));
 		textArea.append("Finita\n");
 	}
 

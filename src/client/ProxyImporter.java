@@ -19,13 +19,14 @@ public class ProxyImporter extends SwingWorker<String, String> {
 
 	private JTextArea textArea;
 	private boolean DoCheckANM;
-	
+
 	private int prcountbefore;
 	private int prcountafter;
 	private int taskQueuesize;
+	private int countvalid = 0;
 
 	DbConnectorSenPit dbConnector;
-	
+
 	public ProxyImporter(JTextArea textArea, boolean DoCheckANM) {
 		this.textArea = textArea;
 		this.DoCheckANM = DoCheckANM;
@@ -61,16 +62,14 @@ public class ProxyImporter extends SwingWorker<String, String> {
 		try {
 			cachedPool.shutdown();
 			cachedPool.awaitTermination(120, TimeUnit.SECONDS);
-		}
-		catch (InterruptedException e) {
-		    System.err.println("tasks interrupted");
-		}
-		finally {
-		    if (!cachedPool.isTerminated()) {
-		        System.err.println("cancel non-finished tasks");
-		    }
-		    cachedPool.shutdownNow();
-		    System.out.println("shutdown finished");
+		} catch (InterruptedException e) {
+			System.err.println("tasks interrupted");
+		} finally {
+			if (!cachedPool.isTerminated()) {
+				System.err.println("cancel non-finished tasks");
+			}
+			cachedPool.shutdownNow();
+			System.out.println("shutdown finished");
 		}
 		prcountbefore = dbConnector.GetProxsCountFromDB();
 		taskQueuesize = taskQueue.size();
@@ -78,20 +77,23 @@ public class ProxyImporter extends SwingWorker<String, String> {
 		int countdone = 0;
 		while (!taskQueue.isEmpty()) {
 			Future<?> checkTask = taskQueue.remove();
-			if (checkTask.isDone() ||  checkTask.isCancelled()) {
+			if (checkTask.isDone() || checkTask.isCancelled()) {
 				countdone++;
 				WorkerResult res = (WorkerResult) checkTask.get();
-				int isalive = res.getRetCode() == RetCodes.Valid ? 1 : 0;
+				boolean isValid = res.getRetCode() == RetCodes.Valid;
+				if (isValid)
+					countvalid++;
 				proxyIP = res.getProxyIP();
 				proxyPort = res.getProxyPort();
-				dbConnector.SaveProxy(proxyIP, proxyPort, isalive);
+				dbConnector.SaveProxy(proxyIP, proxyPort, isValid ? 1 : 0);
 				String message = String.format("%s:%d is %s - %s", proxyIP,
-						proxyPort, (isalive == 0 ? "bad" : "ok"), res.getRetCode());
-				progress = Math.round((countdone / (float) taskQueuesize) * 100f);
+						proxyPort, (isValid ? "ok" : "bad"), res.getRetCode());
+				progress = Math
+						.round((countdone / (float) taskQueuesize) * 100f);
 				setProgress(progress);
 				publish(message);
-			} 
-			//else taskQueue.add(checkTask);
+			}
+			// else taskQueue.add(checkTask);
 		}
 
 		return null;
@@ -112,12 +114,15 @@ public class ProxyImporter extends SwingWorker<String, String> {
 		prcountafter = dbConnector.GetProxsCountFromDB();
 		int newcnt = prcountafter - prcountbefore;
 
-		textArea.append(String.format("Прокси в БД перед импортом : %d \n", prcountbefore));
-		textArea.append(String.format("Прокси для обработки : %d \n", taskQueuesize));
-		textArea.append(String.format("       негодные прокси : %d \n", 
-				taskQueuesize - (newcnt <= 0 ? 0 : newcnt)));
-		textArea.append(String.format("       добавлено новых : %d \n", newcnt));
-		textArea.append(String.format("Прокси в БД после импорта : %d \n", prcountafter));
+		textArea.append(String.format("Прокси в БД перед импортом : %d \n",
+				prcountbefore));
+		textArea.append(String.format("Прокси для обработки : %d \n",
+				taskQueuesize));
+		textArea.append(String.format("		валидные прокси : %d \n",
+				countvalid));
+		textArea.append(String.format("		добавлено новых : %d \n", newcnt));
+		textArea.append(String.format("Прокси в БД после импорта : %d \n",
+				prcountafter));
 		textArea.append("Finita\n");
 	}
 

@@ -168,6 +168,7 @@ public class SenPitServer extends Thread {
 	}
 
 	private RetCodes check(String pHost, int pPort, String pType, boolean DoCheckANM) {
+		String sproxy = pHost + ":" + pPort; 
 		SocketAddress addr = new InetSocketAddress(pHost, pPort);
 		Proxy.Type _pType = (pType.equals("HTTP") ? Proxy.Type.HTTP
 				: Proxy.Type.SOCKS);
@@ -210,13 +211,13 @@ public class SenPitServer extends Thread {
 			urlConn.disconnect();
 			return IsSsl ? RetCodes.Valid : RetCodes.NotSSL;
 		} catch (SocketException e) {
-			System.out.println("SocketException: " + e);
+			System.out.println(sproxy + " - SocketException: " + e);
 			return RetCodes.SocketException;
 		} catch (SocketTimeoutException e) {
-			System.out.println("SocketTimeoutException: " + e);
+			System.out.println(sproxy + " - SocketTimeoutException: " + e);
 			return RetCodes.SocketTimeoutException;
 		} catch (Exception e) {
-			System.out.println("Error: " + e);
+			System.out.println(sproxy + " - Error: " + e);
 			return RetCodes.Exception;
 		}
 	}
