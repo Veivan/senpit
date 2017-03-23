@@ -22,7 +22,9 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import customizer.OuterDB;
+import customizer.OuterFile;
 import customizer.ProviderDB;
+import customizer.ProviderFile;
 
 public class ClientFace {
 
@@ -65,15 +67,11 @@ public class ClientFace {
 		JButton btCheckDBproxies;
 		JButton btImportBanners;
 		JButton btMakeUproxy;
-
-		ProxyImporter workerPrimp; 
-		dbProxyChecker workerDBchecker;
-		
+	
 		ProxyChecker workerProxyChecker; 
 		IOuter outer;
 		IProxyProvider proxyProvider;
 		
-
 		public TestPane() {
 
 			setLayout(new BorderLayout());
@@ -168,8 +166,11 @@ public class ClientFace {
 		}
 
 		private void execImportProxy(boolean DoCheckANM) {
-			workerPrimp = new ProxyImporter(memo, DoCheckANM);
-			workerPrimp.addPropertyChangeListener(new PropertyChangeListener() {
+			IOuter outer = new OuterFile();
+			IProxyProvider proxyProvider = new ProviderFile();
+			ProxyChecker workerProxyChecker = new ProxyChecker(memo, proxyProvider, DoCheckANM, outer);
+
+			workerProxyChecker.addPropertyChangeListener(new PropertyChangeListener() {
 				@Override
 				public void propertyChange(PropertyChangeEvent evt) {
 					if ("progress".equalsIgnoreCase(evt.getPropertyName())) {
@@ -177,7 +178,7 @@ public class ClientFace {
 					}
 				}
 			});
-			workerPrimp.execute();
+			workerProxyChecker.execute();
 		}
 		
 		private void execCheckDBProxy() {
@@ -185,8 +186,7 @@ public class ClientFace {
 			IOuter outer = new OuterDB();
 			IProxyProvider proxyProvider = new ProviderDB();
 			ProxyChecker workerProxyChecker = new ProxyChecker(memo, proxyProvider, DoCheckANM, outer);
-			
-			//workerDBchecker = new dbProxyChecker(memo);
+		
 			workerProxyChecker.addPropertyChangeListener(new PropertyChangeListener() {
 				@Override
 				public void propertyChange(PropertyChangeEvent evt) {
