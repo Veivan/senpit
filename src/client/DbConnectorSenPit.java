@@ -34,14 +34,14 @@ public class DbConnectorSenPit {
 	/**
 	 * Save proxy to DB
 	 */
-	public void SaveProxy(String IP, int port, int isAlive) {
+	public void SaveProxy(String IP, int port, String proxyType, int isAlive) {
 		try {
 			dbConnect();
 			String query = "{call [dbo].[spSaveProxy](?,?,?,?,?)}";
 			CallableStatement sp = conn.prepareCall(query);
 			sp.setString("ip", IP);
 			sp.setInt("port", port);
-			sp.setInt("prtypeID", 1);
+			sp.setInt("prtypeID", proxyType == "HTTP" ? 1 : 2);
 			sp.setInt("id_cn", 0);
 			sp.setInt("alive", isAlive);
 			sp.execute();

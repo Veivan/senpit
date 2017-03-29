@@ -29,7 +29,7 @@ public class SenPitClient implements Callable<Object> {
 	@Override
 	public Object call() {
 		RetCodes retcode = CheckIt();
-		WorkerResult res = new WorkerResult(proxyIP, proxyPort, retcode);
+		WorkerResult res = new WorkerResult(proxyIP, proxyPort, proxyType, retcode);
 		return res;
 	}
 

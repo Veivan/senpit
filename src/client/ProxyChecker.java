@@ -81,9 +81,10 @@ public class ProxyChecker extends SwingWorker<String, String>{
 					countvalid++;
 				String proxyIP = res.getProxyIP();
 				int proxyPort = res.getProxyPort();
-				dbConnector.SaveProxy(proxyIP, proxyPort, isValid ? 1 : 0);
-				String message = String.format("%s:%d is %s - %s", proxyIP,
-						proxyPort, (isValid ? "ok" : "bad"), res.getRetCode());
+				String proxyType = res.getProxyType();
+				dbConnector.SaveProxy(proxyIP, proxyPort, proxyType, isValid ? 1 : 0);
+				String message = String.format("%s:%d %s is %s - %s", proxyIP,
+						proxyPort, proxyType, (isValid ? "ok" : "bad"), res.getRetCode());
 				progress = Math
 						.round((countdone / (float) taskQueuesize) * 100f);
 				setProgress(progress);
