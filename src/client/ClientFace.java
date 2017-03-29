@@ -11,6 +11,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -72,12 +73,14 @@ public class ClientFace {
 		IOuter outer;
 		IProxyProvider proxyProvider;
 		
+		private String proxyType = "";
+		
 		public TestPane() {
 
 			setLayout(new BorderLayout());
 
 			JPanel p1 = new JPanel();
-			GridLayout gl = new GridLayout(5, 2);
+			GridLayout gl = new GridLayout(6, 2);
 			p1.setLayout(gl);
 			add("North", p1);
 
@@ -104,12 +107,28 @@ public class ClientFace {
 			memo3.setEditable(false);
 			memo3.append("");
 
-			JLabel label1 = new JLabel(
+		    JLabel label0 = new JLabel(
+					"Select proxies type");
+			String[] items = {
+				    "HTTP",
+				    "SOCKS"
+				};
+			JComboBox<String> comboBox = new JComboBox<String>(items);
+			proxyType = (String)comboBox.getSelectedItem();
+	        ActionListener actionListener = new ActionListener() {
+	            public void actionPerformed(ActionEvent e) {
+	                JComboBox<?> box = (JComboBox<?>)e.getSource();
+	                proxyType = (String)box.getSelectedItem();
+	            }
+	        };
+	        comboBox.addActionListener(actionListener);
+				
+		    JLabel label1 = new JLabel(
 					"Import proxies from proxy.txt to DB + Check anonymous");
 			btImportProxyFromTXT = new JButton("Start");
 			btImportProxyFromTXT.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					execImportProxy(true);
+					execImportProxy(true, proxyType);
 				}
 			});
 
@@ -117,7 +136,7 @@ public class ClientFace {
 			btImportProxyFromTXTanm = new JButton("Start");
 			btImportProxyFromTXTanm.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					execImportProxy(false);
+					execImportProxy(false, proxyType);
 				}
 			});
 
@@ -148,6 +167,8 @@ public class ClientFace {
 			});
 
 			// Добавляем компоненты на панель
+	        p1.add(label0);
+	        p1.add(comboBox);
 			p1.add(label1);
 			p1.add(btImportProxyFromTXT);
 			p1.add(label1_1);
@@ -165,9 +186,9 @@ public class ClientFace {
 			p3.add(progressBar);
 		}
 
-		private void execImportProxy(boolean DoCheckANM) {
+		private void execImportProxy(boolean DoCheckANM, String proxyType) {
 			IOuter outer = new OuterFile();
-			IProxyProvider proxyProvider = new ProviderFile();
+			IProxyProvider proxyProvider = new ProviderFile(proxyType);
 			ProxyChecker workerProxyChecker = new ProxyChecker(memo, proxyProvider, DoCheckANM, outer);
 
 			workerProxyChecker.addPropertyChangeListener(new PropertyChangeListener() {

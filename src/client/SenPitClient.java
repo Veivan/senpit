@@ -8,8 +8,7 @@ import common.Constants.RetCodes;
 
 public class SenPitClient implements Callable<Object> {
 	static final int port = 1967;
-	// Работать будем только с HTTP
-	static String proxyType = "HTTP";
+	private String proxyType;
 	private String proxyIP;
 	private int proxyPort;
 
@@ -20,9 +19,10 @@ public class SenPitClient implements Callable<Object> {
 	/**
 	 * Конструктор. 
 	 */
-	public SenPitClient(String proxyIP, int proxyPort, boolean DoCheckANM) {
+	public SenPitClient(String proxyIP, int proxyPort, String proxyType, boolean DoCheckANM) {
 		this.proxyIP = proxyIP;
 		this.proxyPort = proxyPort;
+		this.proxyType = proxyType;
 		this.DoCheckANM = DoCheckANM;
 	}
 

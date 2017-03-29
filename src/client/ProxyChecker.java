@@ -49,7 +49,7 @@ public class ProxyChecker extends SwingWorker<String, String>{
 		List<ProxyRecord> ProxyList = ProxyProvider.getProxyList();
 		for (ProxyRecord proxyRec : ProxyList) {
 			taskQueue.add(cachedPool.submit(new SenPitClient(proxyRec.getProxyIP(),
-					proxyRec.getProxyPort(), DoCheckANM)));
+					proxyRec.getProxyPort(), proxyRec.getProxyType(),  DoCheckANM)));
 			String message = String.format("Checking N %d %s:%d", i++,
 					proxyRec.getProxyIP(), proxyRec.getProxyPort());
 			publish(message);

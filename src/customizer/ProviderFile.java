@@ -11,6 +11,13 @@ import client.ProxyRecord;
 
 public class ProviderFile implements IProxyProvider {
 
+	private final String proxyType;
+
+	public ProviderFile(String proxyType) {
+		super();
+		this.proxyType = proxyType;
+	}
+
 	@Override
 	public List<ProxyRecord> getProxyList() {
 		List<ProxyRecord> ProxyList = new ArrayList<ProxyRecord>();
@@ -22,7 +29,7 @@ public class ProviderFile implements IProxyProvider {
 				String[] sp = data.split(":");
 				if (sp.length > 1) {
 					ProxyRecord pRec = new ProxyRecord(sp[0],
-							Integer.parseInt(sp[1]));
+							Integer.parseInt(sp[1]), proxyType);
 					ProxyList.add(pRec);
 				}
 			}

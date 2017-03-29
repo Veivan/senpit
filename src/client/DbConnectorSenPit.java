@@ -62,7 +62,9 @@ public class DbConnectorSenPit {
 		List<String> list = new ArrayList<String>();
 		try {
 			dbConnect();
-			String query = "SELECT [prstr] = [ip] + ':' + CAST([port] AS NVARCHAR) FROM [dbo].[mProxies]";
+			String query = "SELECT [prstr] = [ip] + ':' + CAST([port] AS NVARCHAR) + ':' + " +
+					"LTRIM(RTRIM(D.[typename])) FROM [dbo].[mProxies] P " +
+					" JOIN [dbo].[DicProxyType] D ON D.[prtypeID] = P.[prtypeID]";
 			PreparedStatement pstmt = conn.prepareStatement(query);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {

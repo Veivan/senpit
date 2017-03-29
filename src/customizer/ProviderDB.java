@@ -19,7 +19,7 @@ public class ProviderDB implements IProxyProvider {
 			String[] sp = data.split(":");
 			if (sp.length > 1) {
 				ProxyRecord pRec = new ProxyRecord(sp[0],
-						Integer.parseInt(sp[1]));
+						Integer.parseInt(sp[1]), sp[2]);
 				ProxyList.add(pRec);
 			}
 		}
