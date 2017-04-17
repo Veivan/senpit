@@ -152,8 +152,9 @@ public class ClientFace {
 			btImportBanners = new JButton("Start");
 			btImportBanners.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					// SenPitClient.CheckProxyDB(memo);
-					JOptionPane.showMessageDialog(null, "Import Banners to DB");
+					FotoGrabber fg = new FotoGrabber();
+					fg.GrabNSave();
+					//JOptionPane.showMessageDialog(null, "Import Fotos to DB");
  				}
 			});
 

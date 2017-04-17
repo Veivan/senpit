@@ -104,4 +104,27 @@ public class DbConnectorSenPit {
 		return prcount;
 	}
 
+	/**
+	 * Save image to DB
+	 */
+	public void SaveImage(byte[] picture, int gender, int ptype_id) {
+		try {
+			dbConnect();
+			String query = "{call [dbo].[spLoadImage](?,?,?)}";
+			CallableStatement sp = conn.prepareCall(query);
+			sp.setBytes("pic", picture);
+			sp.setInt("gender", gender);
+			sp.setInt("ptype_id", ptype_id);
+			sp.execute();
+			sp.close();
+			sp = null;
+			if (conn != null)
+				conn.close();
+			conn = null;
+		} catch (Exception e) {
+			System.out.println("SaveImage exception : " + e.getMessage());
+		}
+	}
+
+
 }
