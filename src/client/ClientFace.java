@@ -148,7 +148,7 @@ public class ClientFace {
 				}
 			});
 
-			JLabel label3 = new JLabel("Import Banners to DB");
+			JLabel label3 = new JLabel("Import Fotos to DB");
 			btImportBanners = new JButton("Start");
 			btImportBanners.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {

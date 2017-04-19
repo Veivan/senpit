@@ -13,6 +13,10 @@ import java.util.Scanner;
 
 import javax.net.ssl.HttpsURLConnection;
 
+/**
+ * Парсинг страницы. Получение ссылок на jpg.
+ * Граб jpg с сайта и сохранение в DB.
+ */
 public class FotoGrabber {
 
 	// Настраивается вручную
@@ -33,11 +37,13 @@ public class FotoGrabber {
 				String data = in.next();
 				String mask = "(https://cdn.pixabay.com).+(.jpg)";
 				if (data.matches(mask))
+				{
 					links.add(data);
-				// System.out.println(data);
+					System.out.println(data);
+				}
 			}
 			in.close();
-			//System.out.println(links.size());
+			System.out.println(links.size());
 
 			for (int i = 0; i < links.size(); i++) {
 				String pictureLink = links.get(i);
@@ -45,7 +51,7 @@ public class FotoGrabber {
 				byte[] picture = GetPicture(pictureLink);
 				
 				// Save foto to DB
-				dbConnector.SaveImage(picture, gender, ptype_id);
+				dbConnector.SaveImage(picture, gender, ptype_id); 
 				
 				/* Save foto to file
 				String pfName = "D:/Work/Projects_Java/GrabFoto"
@@ -99,7 +105,12 @@ public class FotoGrabber {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+	}
+	
+	public static void main(String[] args)
+	{
+		FotoGrabber fg = new FotoGrabber();
+		fg.GrabNSave();	
 	}
 
 }
